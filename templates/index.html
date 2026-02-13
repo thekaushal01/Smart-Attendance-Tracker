@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Attendance Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6; 
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary-color);
+        }
+
+        .login-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .progress-ring .bg {
+            stroke: var(--border-color);
+        }
+
+        .progress-ring .progress {
+            stroke-dasharray: 0 251.2;
+            animation: progress-animation 1s ease-out;
+        }
+
+        @keyframes progress-animation {
+            from { stroke-dasharray: 0 251.2; }
+        }
+
+        .subjects-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-toggle button {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .view-toggle button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .subject-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .subject-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .attendance-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        [data-theme="dark"] .badge-success {
+            background: #166534;
+            color: #dcfce7;
+        }
+
+        [data-theme="dark"] .badge-warning {
+            background: #92400e;
+            color: #fef3c7;
+        }
+
+        [data-theme="dark"] .badge-danger {
+            background: #991b1b;
+            color: #fecaca;
+        }
+
+        .subject-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.3) 0%, 
+                rgba(255,255,255,0.6) 50%, 
+                rgba(255,255,255,0.3) 100%);
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .recommendations {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .recommendation {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .recommendation-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .icon-info {
+            background: var(--primary-color);
+        }
+
+        .icon-success {
+            background: var(--success-color);
+        }
+
+        .icon-warning {
+            background: var(--warning-color);
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            min-height: 300px;
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-container canvas {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .actions-section {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .error-message {
+            background: #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #f87171;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #10b981;
+            animation: slideIn 0.3s ease;
+        }
+
+        .warning-message {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #f59e0b;
+            animation: slideIn 0.3s ease;
+        }
+
+        [data-theme="dark"] .warning-message {
+            background: #92400e;
+            color: #fef3c7;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .predictor-section {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .predictor-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .predictor-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .predictor-input input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .subjects-list {
+            display: none;
+        }
+
+        .subjects-list.active {
+            display: block;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            background: var(--bg-color);
+        }
+
+        .mobile-card {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .subjects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .chart-container {
+                padding: 1rem;
+                min-height: 250px;
+            }
+
+            .chart-container canvas {
+                max-height: 200px !important;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .subject-card {
+                padding: 1rem;
+            }
+
+            .mobile-card {
+                display: block;
+            }
+
+            .desktop-card {
+                display: none;
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: var(--success-color);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .refresh-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #2563eb;
+            transform: scale(1.1);
+        }
+
+        .refresh-btn.show {
+            display: flex;
+        }
+
+        /* ===== PARTICLE BACKGROUND SYSTEM ===== */
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 20s infinite linear;
+        }
+
+        .particle:nth-child(odd) {
+            background: var(--success-color);
+            animation-duration: 25s;
+        }
+
+        .particle:nth-child(3n) {
+            background: var(--warning-color);
+            animation-duration: 15s;
+            width: 6px;
+            height: 6px;
+        }
+
+        .particle:nth-child(5n) {
+            background: var(--danger-color);
+            animation-duration: 30s;
+            width: 3px;
+            height: 3px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.6;
+                transform: translateY(95vh) rotate(18deg) scale(1);
+            }
+            95% {
+                opacity: 0.6;
+                transform: translateY(-5vh) rotate(340deg) scale(1);
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particle-container" id="particleContainer"></div>
+    <div class="container">
+        <div class="header">
+            <h1>📚 College Attendance Analyzer</h1>
+            <p>Smart attendance tracking with predictive insights</p>
+        </div>
+
+        <div class="controls">
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </div>
+        </div>
+
+        <div class="login-section">
+            <form id="loginForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter your username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="fetchBtn">
+                    <span id="btnText">🔍 Fetch Attendance</span>
+                    <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+                </button>
+            </form>
+        </div>
+
+        <div id="errorMessage"></div>
+
+        <div class="dashboard" id="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="overallPercentage">0%</div>
+                    <div class="stat-label">Overall Attendance</div>
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle class="bg" cx="40" cy="40" r="36"></circle>
+                        <circle class="progress" id="overallProgress" cx="40" cy="40" r="36"></circle>
+                    </svg>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalClasses">0</div>
+                    <div class="stat-label">Total Classes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="attendedClasses">0</div>
+                    <div class="stat-label">Classes Attended</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="subjectCount">0</div>
+                    <div class="stat-label">Subjects</div>
+                </div>
+            </div>
+
+            <div class="predictor-section">
+                <h3>🎯 Attendance Predictor</h3>
+                <div class="predictor-controls">
+                    <div class="predictor-input">
+                        <label>Classes to attend:</label>
+                        <input type="number" id="classesToAttend" value="0" min="0" max="50">
+                    </div>
+                    <div class="predictor-input">
+                        <label>Classes to miss:</label>
+                        <input type="number" id="classesToMiss" value="0" min="0" max="50">
+                    </div>
+                    <button class="btn" onclick="simulateAttendance()">🎯 Simulate Impact</button>
+                </div>
+                <div id="predictionResult"></div>
+            </div>
+
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title">Attendance Distribution</h3>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Subject Performance</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">📖 Subject Analysis</h2>
+                    <div class="view-toggle">
+                        <button class="active" onclick="toggleView('grid')">Grid</button>
+                        <button onclick="toggleView('list')">List</button>
+                    </div>
+                </div>
+                
+                <div class="subjects-grid active" id="subjectsGrid"></div>
+                <div class="subjects-list" id="subjectsList"></div>
+            </div>
+
+            <div class="actions-section">
+                <h3>📊 Export & Actions</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="btn" onclick="exportToCSV()">📋 Export CSV</button>
+                    <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh Data</button>
+                    <button class="btn btn-secondary" onclick="clearData()">🗑️ Clear Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">🔄</button>
+    <div id="notifications"></div>
+
+    <script>
+        let attendanceData = null;
+        let charts = {};
+
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+                document.getElementById('theme-text').textContent = 'Light Mode';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const fetchBtn = document.getElementById('fetchBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            // Show loading state
+            fetchBtn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            
+            try {
+                const response = await fetch('/fetch_attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    attendanceData = data;
+                    displayDashboard(data);
+                    showNotification('Attendance data fetched successfully!');
+                    document.getElementById('refreshBtn').classList.add('show');
+                } else {
+                    showError(data.message || 'Failed to fetch attendance data');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                // Reset loading state
+                fetchBtn.disabled = false;
+                btnText.style.display = 'inline';
+                spinner.style.display = 'none';
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+            setTimeout(() => errorDiv.innerHTML = '', 5000);
+            showNotification(message, 'error');
+        }
+
+        function displayDashboard(data) {
+            // Show dashboard
+            document.getElementById('dashboard').classList.add('active');
+            
+            // Update overall stats
+            const overall = data.overall;
+            document.getElementById('overallPercentage').textContent = overall.percentage + '%';
+            document.getElementById('totalClasses').textContent = overall.total;
+            document.getElementById('attendedClasses').textContent = overall.attended;
+            document.getElementById('subjectCount').textContent = data.subjects.length;
+            
+            // Update progress ring
+            updateProgressRing('overallProgress', parseFloat(overall.percentage));
+            
+            // Display subjects
+            displaySubjects(data.subjects);
+            
+            // Force chart refresh with new data (ensures charts always update)
+            setTimeout(() => {
+                forceChartRefresh(data);
+            }, 300);
+        }
+
+        function updateProgressRing(id, percentage) {
+            const circle = document.getElementById(id);
+            const radius = 36;
+            const circumference = 2 * Math.PI * radius;
+            const progress = (percentage / 100) * circumference;
+            
+            circle.style.strokeDasharray = `${progress} ${circumference}`;
+            
+            // Color based on percentage
+            if (percentage >= 75) {
+                circle.style.stroke = '#10b981';
+            } else if (percentage >= 60) {
+                circle.style.stroke = '#f59e0b';
+            } else {
+                circle.style.stroke = '#ef4444';
+            }
+        }
+
+        function displaySubjects(subjects) {
+            const gridContainer = document.getElementById('subjectsGrid');
+            const listContainer = document.getElementById('subjectsList');
+            
+            gridContainer.innerHTML = '';
+            listContainer.innerHTML = '';
+            
+            subjects.forEach(subject => {
+                const percentage = parseFloat(subject.percentage);
+                const badgeClass = percentage >= 75 ? 'badge-success' : 
+                                  percentage >= 60 ? 'badge-warning' : 'badge-danger';
+                
+                // Grid view card
+                const gridCard = document.createElement('div');
+                gridCard.className = 'subject-card';
+                gridCard.innerHTML = `
+                    <div class="subject-header">
+                        <div class="subject-name">${subject.subject}</div>
+                        <div class="attendance-badge ${badgeClass}">${subject.percentage}%</div>
+                    </div>
+                    <div class="subject-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">${subject.attended}</div>
+                            <div class="stat-text">Attended</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">${subject.total}</div>
+                            <div class="stat-text">Total</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${percentage}%; background-color: ${getProgressColor(percentage)};"></div>
+                    </div>
+                    <div class="recommendations">
+                        ${generateRecommendations(subject)}
+                    </div>
+                `;
+                gridContainer.appendChild(gridCard);
+                
+                // List view item
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                listItem.innerHTML = `
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 4px; color: var(--text-primary);">${subject.subject}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            ${subject.attended}/${subject.total} classes attended
+                        </div>
+                        <div class="progress-bar" style="margin: 0; width: 100%; max-width: 200px;">
+                            <div class="progress-fill" style="width: ${percentage}%; background-color: ${getProgressColor(percentage)};"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">
+                            ${percentage < 75 && subject.needed_75 > 0 ? `Need ${subject.needed_75} more for 75%` : ''}
+                            ${subject.can_miss_75 > 0 ? `Can miss ${subject.can_miss_75} classes and maintain 75%` : ''}
+                        </div>
+                    </div>
+                    <div class="attendance-badge ${badgeClass}">${subject.percentage}%</div>
+                `;
+                listContainer.appendChild(listItem);
+            });
+        }
+
+        function getProgressColor(percentage) {
+            if (percentage >= 75) return '#10b981';
+            if (percentage >= 60) return '#f59e0b';
+            return '#ef4444';
+        }
+
+        function generateRecommendations(subject) {
+            const recommendations = [];
+            const percentage = parseFloat(subject.percentage);
+            
+            if (percentage < 60) {
+                // Below 60%: Show classes needed for both 60% and 75%
+                recommendations.push(`
+                    <div class="recommendation">
+                        <div class="recommendation-icon icon-warning"></div>
+                        <span>Need ${subject.needed_60} more classes to reach 60%</span>
+                    </div>
+                `);
+                recommendations.push(`
+                    <div class="recommendation">
+                        <div class="recommendation-icon icon-info"></div>
+                        <span>Need ${subject.needed_75} more classes to reach 75%</span>
+                    </div>
+                `);
+            } else if (percentage >= 60 && percentage < 75) {
+                // Between 60-75%: Show classes can miss for 60% and classes needed for 75%
+                recommendations.push(`
+                    <div class="recommendation">
+                        <div class="recommendation-icon icon-success"></div>
+                        <span>Can miss ${subject.can_miss_60} classes and maintain 60%</span>
+                    </div>
+                `);
+                recommendations.push(`
+                    <div class="recommendation">
+                        <div class="recommendation-icon icon-info"></div>
+                        <span>Need ${subject.needed_75} more classes to reach 75%</span>
+                    </div>
+                `);
+            } else {
+                // Above 75%: Show classes can miss for both 60% and 75%
+                recommendations.push(`
+                    <div class="recommendation">
+                        <div class="recommendation-icon icon-success"></div>
+                        <span>Can miss ${subject.can_miss_60} classes and maintain 60%</span>
+                    </div>
+                `);
+                recommendations.push(`
+                    <div class="recommendation">
+                        <div class="recommendation-icon icon-success"></div>
+                        <span>Can miss ${subject.can_miss_75} classes and maintain 75%</span>
+                    </div>
+                `);
+            }
+            
+            return recommendations.join('');
+        }
+
+        function createCharts(data) {
+            // Only create charts if containers exist and data is valid
+            const attendanceCanvas = document.getElementById('attendanceChart');
+            const performanceCanvas = document.getElementById('performanceChart');
+            
+            if (!attendanceCanvas || !performanceCanvas || !data || !data.subjects) {
+                console.log('Chart containers or data not available');
+                return;
+            }
+            
+            // Destroy existing charts to prevent memory leaks and ensure fresh data
+            if (charts.attendance) {
+                charts.attendance.destroy();
+                charts.attendance = null;
+            }
+            if (charts.performance) {
+                charts.performance.destroy();
+                charts.performance = null;
+            }
+            
+            // Clear canvas contexts
+            const attendanceCtx = attendanceCanvas.getContext('2d');
+            const performanceCtx = performanceCanvas.getContext('2d');
+            attendanceCtx.clearRect(0, 0, attendanceCanvas.width, attendanceCanvas.height);
+            performanceCtx.clearRect(0, 0, performanceCanvas.width, performanceCanvas.height);
+            
+            try {
+                // Attendance Distribution Chart (Doughnut) - ALWAYS RECREATED WITH FRESH DATA
+                const attendanceLabels = ['Below 60%', '60-75%', 'Above 75%'];
+                const attendanceCounts = [0, 0, 0];
+                
+                // Process current data (not cached)
+                data.subjects.forEach(subject => {
+                    const percentage = parseFloat(subject.percentage);
+                    if (percentage < 60) attendanceCounts[0]++;
+                    else if (percentage < 75) attendanceCounts[1]++;
+                    else attendanceCounts[2]++;
+                });
+                
+                console.log('Creating attendance chart with data:', attendanceCounts);
+                
+                charts.attendance = new Chart(attendanceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: attendanceLabels,
+                        datasets: [{
+                            data: attendanceCounts,
+                            backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                            borderColor: ['#dc2626', '#d97706', '#059669'],
+                            borderWidth: 2,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 1.2,
+                        layout: {
+                            padding: 10
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    usePointStyle: true,
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = data.subjects.length;
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${label}: ${value} subjects (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            animateRotate: true,
+                            duration: 800
+                        }
+                    }
+                });
+                
+                // Subject Performance Chart (Bar) - ALWAYS RECREATED WITH FRESH DATA
+                // Sort subjects by percentage for better visualization (use fresh data)
+                const sortedSubjects = [...data.subjects].sort((a, b) => 
+                    parseFloat(b.percentage) - parseFloat(a.percentage)
+                );
+                
+                const subjectNames = sortedSubjects.map(s => 
+                    s.subject.length > 10 ? s.subject.substring(0, 10) + '...' : s.subject
+                );
+                const percentages = sortedSubjects.map(s => parseFloat(s.percentage));
+                const backgroundColors = percentages.map(p => {
+                    if (p >= 75) return '#10b981';
+                    if (p >= 60) return '#f59e0b';
+                    return '#ef4444';
+                });
+                
+                console.log('Creating performance chart with subjects:', subjectNames.length);
+                
+                charts.performance = new Chart(performanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: subjectNames,
+                        datasets: [{
+                            label: 'Attendance Percentage',
+                            data: percentages,
+                            backgroundColor: backgroundColors,
+                            borderColor: backgroundColors,
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 1.2,
+                        layout: {
+                            padding: {
+                                top: 10,
+                                bottom: 10,
+                                left: 5,
+                                right: 5
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    },
+                                    font: {
+                                        size: 10
+                                    },
+                                    maxTicksLimit: 6
+                                },
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 0,
+                                    font: {
+                                        size: 9
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(context) {
+                                        const index = context[0].dataIndex;
+                                        return sortedSubjects[index].subject;
+                                    },
+                                    label: function(context) {
+                                        const index = context.dataIndex;
+                                        const subject = sortedSubjects[index];
+                                        return [
+                                            `Attendance: ${context.parsed.y}%`,
+                                            `Attended: ${subject.attended}/${subject.total} classes`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 800,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+                
+                console.log('✅ Charts created successfully with fresh data');
+                
+            } catch (error) {
+                console.error('❌ Error creating charts:', error);
+                showNotification('Error creating charts: ' + error.message, 'error');
+            }
+        }
+
+        function toggleView(view) {
+            const buttons = document.querySelectorAll('.view-toggle button');
+            const gridView = document.getElementById('subjectsGrid');
+            const listView = document.getElementById('subjectsList');
+            
+            // Reset all button states
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Set active button
+            const clickedButton = event.target;
+            clickedButton.classList.add('active');
+            
+            // Toggle views with proper hiding/showing
+            if (view === 'grid') {
+                gridView.classList.remove('hidden');
+                gridView.style.display = 'grid';
+                listView.classList.remove('active');
+                listView.classList.add('hidden');
+                listView.style.display = 'none';
+                console.log('📊 Switched to Grid View');
+            } else if (view === 'list') {
+                gridView.classList.add('hidden');
+                gridView.style.display = 'none';
+                listView.classList.add('active');
+                listView.classList.remove('hidden');
+                listView.style.display = 'block';
+                console.log('📋 Switched to List View');
+            }
+            
+            // Save preference
+            try {
+                localStorage.setItem('viewPreference', view);
+            } catch (error) {
+                console.warn('Could not save view preference:', error);
+            }
+        }
+
+        function simulateAttendance() {
+            if (!attendanceData) {
+                showNotification('Please fetch attendance data first', 'error');
+                return;
+            }
+            
+            const classesToAttend = parseInt(document.getElementById('classesToAttend').value) || 0;
+            const classesToMiss = parseInt(document.getElementById('classesToMiss').value) || 0;
+            const resultDiv = document.getElementById('predictionResult');
+            
+            // Calculate new attendance based on both attend and miss
+            let newAttended = attendanceData.overall.attended + classesToAttend;
+            let newTotal = attendanceData.overall.total + classesToAttend + classesToMiss;
+            
+            const currentPercentage = parseFloat(attendanceData.overall.percentage);
+            const newPercentage = newTotal > 0 ? ((newAttended / newTotal) * 100) : 0;
+            const change = (newPercentage - currentPercentage);
+            
+            // Determine result styling
+            const changeClass = change > 0 ? 'success' : change < 0 ? 'danger' : 'warning';
+            const changeIcon = change > 0 ? '📈' : change < 0 ? '📉' : '➡️';
+            const changeText = change > 0 ? 'increase' : change < 0 ? 'decrease' : 'no change';
+            
+            // Generate recommendation based on new percentage
+            let recommendation = '';
+            let recommendationClass = 'success-message';
+            
+            if (newPercentage < 60) {
+                recommendation = '⚠️ <strong>Critical:</strong> Below 60% - High risk zone!';
+                recommendationClass = 'error-message';
+            } else if (newPercentage < 75) {
+                recommendation = '⚡ <strong>Warning:</strong> Below 75% - Consider attending more classes';
+                recommendationClass = 'warning-message';
+            } else {
+                recommendation = '✅ <strong>Safe:</strong> Above 75% - Good attendance level!';
+                recommendationClass = 'success-message';
+            }
+            
+            // Build result display
+            let resultHTML = `
+                <div class="${recommendationClass}">
+                    <strong>Simulation Result:</strong><br>
+                    After attending ${classesToAttend} and missing ${classesToMiss} classes:<br>
+                    <div style="margin-top: 12px; font-size: 1.2rem;">
+                        ${changeIcon} <strong>${newPercentage.toFixed(2)}%</strong> 
+                        <span style="color: var(--${changeClass === 'success' ? 'success' : changeClass === 'danger' ? 'danger' : 'warning'}-color);">
+                            (${change > 0 ? '+' : ''}${change.toFixed(2)}% ${changeText})
+                        </span>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.9rem; opacity: 0.8;">
+                        Total: ${newAttended}/${newTotal} classes
+                    </div>
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        ${recommendation}
+                    </div>
+                </div>
+            `;
+            
+            // Add additional insights if both values are provided
+            if (classesToAttend > 0 && classesToMiss > 0) {
+                const attendOnlyPercentage = ((attendanceData.overall.attended + classesToAttend) / (attendanceData.overall.total + classesToAttend) * 100);
+                const missOnlyPercentage = (attendanceData.overall.attended / (attendanceData.overall.total + classesToMiss) * 100);
+                
+                resultHTML += `
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9rem;">
+                        <strong>💡 Additional Insights:</strong><br>
+                        • If only attending ${classesToAttend}: ${attendOnlyPercentage.toFixed(2)}%<br>
+                        • If only missing ${classesToMiss}: ${missOnlyPercentage.toFixed(2)}%<br>
+                        • Combined impact: ${newPercentage.toFixed(2)}%
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = resultHTML;
+            
+            // Show notification
+            showNotification(`Simulation complete: ${newPercentage.toFixed(1)}% attendance projected`);
+        }
+
+        function exportToPDF() {
+            if (!attendanceData) {
+                showNotification('No data available to export', 'error');
+                return;
+            }
+            
+            try {
+                // Check if jsPDF is loaded with multiple possible references
+                let jsPDF;
+                if (window.jspdf && window.jspdf.jsPDF) {
+                    jsPDF = window.jspdf.jsPDF;
+                } else if (window.jsPDF) {
+                    jsPDF = window.jsPDF;
+                } else {
+                    throw new Error('jsPDF library not found');
+                }
+                
+                const doc = new jsPDF();
+                
+                // Set font
+                doc.setFont('helvetica');
+                
+                // Title
+                doc.setFontSize(20);
+                doc.setTextColor(0, 0, 0);
+                doc.text('Attendance Report', 20, 30);
+                
+                // Date
+                doc.setFontSize(12);
+                const currentDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                doc.text(`Generated on: ${currentDate}`, 20, 45);
+                
+                // Line separator
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, 50, 190, 50);
+                
+                // Overall statistics
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text('Overall Statistics', 20, 65);
+                
+                doc.setFontSize(12);
+                doc.text(`Total Classes: ${attendanceData.overall.total}`, 30, 80);
+                doc.text(`Classes Attended: ${attendanceData.overall.attended}`, 30, 90);
+                doc.text(`Attendance Percentage: ${attendanceData.overall.percentage}%`, 30, 100);
+                
+                if (attendanceData.overall.needed_75 > 0) {
+                    doc.text(`Classes needed for 75%: ${attendanceData.overall.needed_75}`, 30, 110);
+                }
+                
+                if (attendanceData.overall.can_miss_75 > 0) {
+                    doc.text(`Classes can miss (maintain 75%): ${attendanceData.overall.can_miss_75}`, 30, 120);
+                }
+                
+                // Subject breakdown
+                doc.setFontSize(16);
+                doc.text('Subject-wise Breakdown', 20, 140);
+                
+                let yPosition = 155;
+                const pageHeight = doc.internal.pageSize.height;
+                
+                attendanceData.subjects.forEach((subject, index) => {
+                    // Check if we need a new page
+                    if (yPosition > pageHeight - 40) {
+                        doc.addPage();
+                        yPosition = 20;
+                        doc.setFontSize(16);
+                        doc.text('Subject-wise Breakdown (continued)', 20, yPosition);
+                        yPosition += 20;
+                    }
+                    
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    
+                    // Subject name (truncate if too long)
+                    const subjectName = subject.subject.length > 30 ? 
+                        subject.subject.substring(0, 30) + '...' : subject.subject;
+                    
+                    doc.text(`${index + 1}. ${subjectName}`, 30, yPosition);
+                    doc.text(`${subject.attended}/${subject.total} classes`, 120, yPosition);
+                    doc.text(`(${subject.percentage}%)`, 160, yPosition);
+                    
+                    yPosition += 8;
+                    
+                    // Add recommendations if any
+                    const percentage = parseFloat(subject.percentage);
+                    if (percentage < 75 && subject.needed_75 > 0) {
+                        doc.setFontSize(10);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text(`   → Need ${subject.needed_75} more classes for 75%`, 30, yPosition);
+                        yPosition += 6;
+                    }
+                    
+                    if (subject.can_miss_75 > 0) {
+                        doc.setFontSize(10);
+                        doc.setTextColor(150, 150, 150);
+                        doc.text(`   → Can miss ${subject.can_miss_75} classes (maintain 75%)`, 30, yPosition);
+                        yPosition += 6;
+                    }
+                    
+                    yPosition += 5; // Extra spacing between subjects
+                });
+                
+                // Footer
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(`Page ${i} of ${totalPages} - Generated by Attendance Analyzer`, 
+                        20, pageHeight - 10);
+                }
+                
+                // Save the PDF
+                const fileName = `attendance_report_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.save(fileName);
+                showNotification('PDF exported successfully!');
+                
+            } catch (error) {
+                console.error('PDF Export Error:', error);
+                
+                // Fallback: Generate a simple text report
+                generateTextReport();
+                showNotification('PDF library unavailable. Text report generated instead.', 'warning');
+            }
+        }
+
+        // Fallback text report generator
+        function generateTextReport() {
+            if (!attendanceData) return;
+            
+            let report = 'ATTENDANCE REPORT\n';
+            report += '=================\n\n';
+            report += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
+            
+            report += 'OVERALL STATISTICS:\n';
+            report += `Total Classes: ${attendanceData.overall.total}\n`;
+            report += `Classes Attended: ${attendanceData.overall.attended}\n`;
+            report += `Attendance Percentage: ${attendanceData.overall.percentage}%\n\n`;
+            
+            report += 'SUBJECT-WISE BREAKDOWN:\n';
+            report += '========================\n\n';
+            
+            attendanceData.subjects.forEach((subject, index) => {
+                report += `${index + 1}. ${subject.subject}\n`;
+                report += `   Attended: ${subject.attended}/${subject.total} classes (${subject.percentage}%)\n`;
+                
+                if (subject.needed_75 > 0) {
+                    report += `   → Need ${subject.needed_75} more classes for 75%\n`;
+                }
+                
+                if (subject.can_miss_75 > 0) {
+                    report += `   → Can miss ${subject.can_miss_75} classes (maintain 75%)\n`;
+                }
+                
+                report += '\n';
+            });
+            
+            // Create and download text file
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `attendance_report_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportToCSV() {
+            if (!attendanceData) return;
+            
+            try {
+                let csvContent = 'Subject,Total Classes,Attended Classes,Percentage,Classes Needed (75%),Classes Can Miss (75%)\n';
+                
+                attendanceData.subjects.forEach(subject => {
+                    csvContent += `"${subject.subject}",${subject.total},${subject.attended},${subject.percentage},${subject.needed_75},${subject.can_miss_75}\n`;
+                });
+                
+                // Add overall row
+                const overall = attendanceData.overall;
+                csvContent += `"OVERALL",${overall.total},${overall.attended},${overall.percentage},${overall.needed_75},${overall.can_miss_75}\n`;
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'attendance_data.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                showNotification('CSV exported successfully!');
+            } catch (error) {
+                showNotification('Error exporting CSV: ' + error.message, 'error');
+            }
+        }
+
+        function refreshData() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username && password) {
+                // Prevent multiple simultaneous requests
+                const fetchBtn = document.getElementById('fetchBtn');
+                if (fetchBtn.disabled) {
+                    showNotification('Request already in progress...', 'error');
+                    return;
+                }
+                
+                // Trigger form submission
+                const form = document.getElementById('loginForm');
+                const submitEvent = new Event('submit', { cancelable: true });
+                form.dispatchEvent(submitEvent);
+            } else {
+                showNotification('Please enter username and password first', 'error');
+            }
+        }
+
+        function clearData() {
+            if (confirm('Are you sure you want to clear all data?')) {
+                // Destroy charts first
+                destroyAllCharts();
+                
+                // Clear data
+                attendanceData = null;
+                document.getElementById('dashboard').classList.remove('active');
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('refreshBtn').classList.remove('show');
+                
+                // Clear session storage
+                try {
+                    sessionStorage.removeItem('attendanceData');
+                } catch (error) {
+                    console.warn('Could not clear session storage:', error);
+                }
+                
+                // Disable auto-refresh
+                disableAutoRefresh();
+                
+                showNotification('Data cleared successfully!');
+            }
+        }
+
+        // Pull to refresh functionality for mobile
+        let startY = 0;
+        let pullDistance = 0;
+        let isPulling = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].clientY;
+                isPulling = true;
+            }
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isPulling && window.scrollY === 0) {
+                pullDistance = e.touches[0].clientY - startY;
+                if (pullDistance > 0 && pullDistance < 100) {
+                    document.body.style.transform = `translateY(${pullDistance * 0.5}px)`;
+                }
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            if (isPulling && pullDistance > 60) {
+                refreshData();
+            }
+            
+            document.body.style.transform = '';
+            isPulling = false;
+            pullDistance = 0;
+        });
+
+        // Auto-refresh management (disabled by default)
+        let autoRefreshInterval = null;
+        
+        // Clean up and destroy all charts
+        function destroyAllCharts() {
+            try {
+                Object.keys(charts).forEach(key => {
+                    if (charts[key] && typeof charts[key].destroy === 'function') {
+                        console.log(`Destroying chart: ${key}`);
+                        charts[key].destroy();
+                        charts[key] = null;
+                    }
+                });
+                charts = {};
+                console.log('✅ All charts destroyed successfully');
+            } catch (error) {
+                console.error('❌ Error destroying charts:', error);
+            }
+        }
+
+        // Force chart refresh - ensures charts always update with new data
+        function forceChartRefresh(data) {
+            console.log('🔄 Force refreshing charts with new data');
+            
+            // Always destroy existing charts first
+            destroyAllCharts();
+            
+            // Wait for cleanup, then create fresh charts
+            setTimeout(() => {
+                safeCreateCharts(data);
+            }, 100);
+        }
+        
+        function enableAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            
+            autoRefreshInterval = setInterval(() => {
+                if (attendanceData && document.getElementById('username').value && document.getElementById('password').value) {
+                    console.log('Auto-refreshing data...');
+                    refreshData();
+                    showNotification('Data auto-refreshed!');
+                }
+            }, 300000); // 5 minutes
+        }
+        
+        function disableAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        // Initialize theme on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            
+            // Initialize chart system
+            initializeCharts();
+            
+            // Check if there's saved data in sessionStorage
+            const savedData = sessionStorage.getItem('attendanceData');
+            if (savedData) {
+                try {
+                    attendanceData = JSON.parse(savedData);
+                    displayDashboard(attendanceData);
+                    document.getElementById('refreshBtn').classList.add('show');
+                    showNotification('Previous data loaded!');
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                    sessionStorage.removeItem('attendanceData');
+                }
+            }
+        });
+
+        // Save data to session storage when fetched
+        function saveToSession(data) {
+            try {
+                sessionStorage.setItem('attendanceData', JSON.stringify(data));
+            } catch (error) {
+                console.warn('Could not save to session storage:', error);
+            }
+        }
+
+        // Update the original display function to handle auto-refresh properly
+        const originalDisplayDashboard = displayDashboard;
+        displayDashboard = function(data) {
+            originalDisplayDashboard(data);
+            saveToSession(data);
+            
+            // Enable auto-refresh only after successful data fetch
+            if (!autoRefreshInterval) {
+                // Ask user if they want auto-refresh (optional)
+                // enableAutoRefresh();
+            }
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 'r':
+                        e.preventDefault();
+                        refreshData();
+                        break;
+                    case 'e':
+                        e.preventDefault();
+                        if (attendanceData) exportToPDF();
+                        break;
+                    case 'd':
+                        e.preventDefault();
+                        toggleTheme();
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                }
+            }
+        });
+
+        // Add tooltips for better UX
+        function addTooltips() {
+            const tooltipElements = [
+                { selector: '.progress-ring', text: 'Overall attendance percentage' },
+                { selector: '.attendance-badge', text: 'Current attendance percentage' },
+                { selector: '.stat-card', text: 'Click for detailed breakdown' }
+            ];
+
+            tooltipElements.forEach(({ selector, text }) => {
+                document.querySelectorAll(selector).forEach(el => {
+                    el.title = text;
+                });
+            });
+        }
+
+        // Improved chart initialization and management
+        function initializeCharts() {
+            // Clear any existing charts
+            charts = {};
+            
+            // Check if Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded');
+                return false;
+            }
+            
+            // Set Chart.js defaults
+            Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+            Chart.defaults.color = getComputedStyle(document.documentElement)
+                .getPropertyValue('--text-secondary').trim();
+            
+            return true;
+        }
+
+        // Safe chart creation with error handling
+        function safeCreateCharts(data) {
+            if (!data || !data.subjects || data.subjects.length === 0) {
+                console.log('No valid data for charts');
+                return;
+            }
+            
+            // Initialize charts if not done already
+            if (!initializeCharts()) {
+                setTimeout(() => safeCreateCharts(data), 1000); // Retry after 1 second
+                return;
+            }
+            
+            // Use requestAnimationFrame for smooth rendering
+            requestAnimationFrame(() => {
+                try {
+                    createCharts(data);
+                } catch (error) {
+                    console.error('Chart creation failed:', error);
+                    showNotification('Charts could not be created. Data is still available.', 'error');
+                }
+            });
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Initialize all features
+        window.addEventListener('load', () => {
+            // Ensure all libraries are loaded
+            const checkLibraries = () => {
+                const chartLoaded = typeof Chart !== 'undefined';
+                let jsPDFLoaded = false;
+                
+                // Check for jsPDF in multiple locations
+                if (window.jspdf && window.jspdf.jsPDF) {
+                    jsPDFLoaded = true;
+                } else if (window.jsPDF) {
+                    jsPDFLoaded = true;
+                }
+                
+                // Proper console logging
+                console.log('📚 Library Status Check:');
+                console.log('Chart.js:', chartLoaded ? 'Loaded ✅' : 'Missing ❌');
+                console.log('jsPDF:', jsPDFLoaded ? 'Loaded ✅' : 'Missing ❌');
+                
+                if (!chartLoaded) {
+                    console.warn('⚠️ Chart.js not loaded - charts will not work');
+                    showNotification('Chart library not loaded - charts may not work', 'error');
+                }
+                
+                if (!jsPDFLoaded) {
+                    console.log('ℹ️ jsPDF not available - will use text export fallback');
+                } else {
+                    console.log('✅ All libraries loaded successfully');
+                }
+            };
+            
+            // Check libraries after a delay to ensure loading
+            setTimeout(checkLibraries, 2000);
+            
+            // Add event listeners
+            const form = document.getElementById('loginForm');
+            if (form) {
+                form.addEventListener('submit', () => {
+                    setTimeout(addTooltips, 2000);
+                });
+            }
+        });
+
+        // Page visibility API to handle tab switching
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Page is hidden - pause any ongoing operations
+                disableAutoRefresh();
+            } else {
+                // Page is visible again - resume if needed
+                if (attendanceData && !autoRefreshInterval) {
+                    // User can manually enable auto-refresh if needed
+                }
+            }
+        });
+
+        // Before page unload - cleanup
+        window.addEventListener('beforeunload', () => {
+            destroyAllCharts();
+            disableAutoRefresh();
+        });
+
+        function createParticleSystem() {
+            const container = document.getElementById('particleContainer');
+            if (!container) return;
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                
+                const size = 3 + Math.random() * 4;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                container.appendChild(particle);
+                
+                setTimeout(() => {
+                    if (container.contains(particle)) {
+                        container.removeChild(particle);
+                    }
+                }, 35000);
+            }
+            
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => createParticle(), i * 50);
+            }
+            
+            setInterval(createParticle, 400);
+        }
+
+        // Start particle system on load
+        window.addEventListener('load', () => {
+            createParticleSystem();
+        });
+    </script>
+</body>
+</html>
