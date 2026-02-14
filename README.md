@@ -1,8 +1,13 @@
-# 📚 Smart Attendance Tracker
+<h1 align="center">
+  <img src="assets/logo.png" alt="Smart Attendance Tracker Logo" width="40" style="vertical-align: middle;"/>
+  Smart Attendance Tracker
+</h1>
 
-A modern, AI-powered attendance tracking system designed exclusively for LNCT College students. Get real-time insights, predictions, and smart recommendations to maintain optimal attendance.
+<p align="center">
+  A modern, AI-powered attendance tracking system designed exclusively for LNCT College students. Get real-time insights, predictions, and smart recommendations to maintain   optimal attendance.
+</p>
 
-![Smart Attendance Tracker](assets/logo.png)
+
 
 ## 🌟 Features
 
