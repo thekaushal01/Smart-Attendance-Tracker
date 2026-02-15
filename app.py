@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -152,12 +152,22 @@ def scrape_attendance(username, password):
 @app.route("/")
 def landing():
     """Serves the landing/marketing page."""
-    return render_template("landing.html")
+    return render_template("frontend/landing.html")
+
+@app.route("/landing.css")
+def landing_css():
+    """Serves the landing page CSS."""
+    return send_from_directory('templates/frontend', 'landing.css', mimetype='text/css')
+
+@app.route("/landing.js")
+def landing_js():
+    """Serves the landing page JavaScript."""
+    return send_from_directory('templates/frontend', 'landing.js', mimetype='application/javascript')
 
 @app.route("/app")
 def app_dashboard():
     """Serves the main attendance analyzer dashboard."""
-    return render_template("index.html")
+    return render_template("dashboard/index.html")
 
 @app.route("/fetch_attendance", methods=["POST"])
 def fetch_attendance():
