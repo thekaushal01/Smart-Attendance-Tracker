@@ -167,7 +167,17 @@ def landing_js():
 @app.route("/app")
 def app_dashboard():
     """Serves the main attendance analyzer dashboard."""
-    return render_template("dashboard/index.html")
+    return render_template("dashboard/dashboard.html")
+
+@app.route("/dashboard.css")
+def dashboard_css():
+    """Serves the dashboard page CSS."""
+    return send_from_directory('templates/dashboard', 'dashboard.css', mimetype='text/css')
+
+@app.route("/dashboard.js")
+def dashboard_js():
+    """Serves the dashboard page JavaScript."""
+    return send_from_directory('templates/dashboard', 'dashboard.js', mimetype='application/javascript')
 
 @app.route("/fetch_attendance", methods=["POST"])
 def fetch_attendance():

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Attendance Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="particle-container" id="particleContainer"></div>
+    <div class="container">
+        <div class="header">
+            <h1>📚 College Attendance Analyzer</h1>
+            <p>Smart attendance tracking with predictive insights</p>
+        </div>
+
+        <div class="controls">
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+                <span id="theme-text">Dark Mode</span>
+            </div>
+        </div>
+
+        <div class="login-section">
+            <form id="loginForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter your username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="fetchBtn">
+                    <span id="btnText">🔍 Fetch Attendance</span>
+                    <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+                </button>
+            </form>
+        </div>
+
+        <div id="errorMessage"></div>
+
+        <div class="dashboard" id="dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="overallPercentage">0%</div>
+                    <div class="stat-label">Overall Attendance</div>
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle class="bg" cx="40" cy="40" r="36"></circle>
+                        <circle class="progress" id="overallProgress" cx="40" cy="40" r="36"></circle>
+                    </svg>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalClasses">0</div>
+                    <div class="stat-label">Total Classes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="attendedClasses">0</div>
+                    <div class="stat-label">Classes Attended</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="subjectCount">0</div>
+                    <div class="stat-label">Subjects</div>
+                </div>
+            </div>
+
+            <div class="predictor-section">
+                <h3>🎯 Attendance Predictor</h3>
+                <div class="predictor-controls">
+                    <div class="predictor-input">
+                        <label>Classes to attend:</label>
+                        <input type="number" id="classesToAttend" value="0" min="0" max="50">
+                    </div>
+                    <div class="predictor-input">
+                        <label>Classes to miss:</label>
+                        <input type="number" id="classesToMiss" value="0" min="0" max="50">
+                    </div>
+                    <button class="btn" onclick="simulateAttendance()">🎯 Simulate Impact</button>
+                </div>
+                <div id="predictionResult"></div>
+            </div>
+
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title">Attendance Distribution</h3>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Subject Performance</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">📖 Subject Analysis</h2>
+                    <div class="view-toggle">
+                        <button class="active" onclick="toggleView('grid')">Grid</button>
+                        <button onclick="toggleView('list')">List</button>
+                    </div>
+                </div>
+                
+                <div class="subjects-grid active" id="subjectsGrid"></div>
+                <div class="subjects-list" id="subjectsList"></div>
+            </div>
+
+            <div class="actions-section">
+                <h3>📊 Export & Actions</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="btn" onclick="exportToCSV()">📋 Export CSV</button>
+                    <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh Data</button>
+                    <button class="btn btn-secondary" onclick="clearData()">🗑️ Clear Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">🔄</button>
+    <div id="notifications"></div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
