@@ -926,6 +926,222 @@ body {
     display: flex;
 }
 
+/* ===== ATTENDANCE CORRECTIONS SECTION ===== */
+.corrections-section {
+    background: var(--card-bg);
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+    border-radius: clamp(0.75rem, 2vw, 1rem);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.corrections-section h3 {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    margin-bottom: 0;
+}
+
+.correction-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(0.75rem, 2vw, 1rem);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.correction-select, .correction-input {
+    width: 100%;
+    padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 2.5vw, 1rem);
+    border: 0.125rem solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease;
+}
+
+.correction-select:focus, .correction-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.corrections-summary {
+    background: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.corrections-summary.active {
+    display: block;
+}
+
+.correction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.correction-item:last-child {
+    margin-bottom: 0;
+}
+
+.correction-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.remove-correction {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.remove-correction:hover {
+    background: #dc2626;
+}
+
+.adjusted-stats {
+    display: none;
+}
+
+.adjusted-stats.active {
+    display: block;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(14rem, 35vw, 18rem), 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+    margin-top: 1rem;
+}
+
+.comparison-card {
+    background: var(--bg-color);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.comparison-card.adjusted {
+    border-color: var(--success-color);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.comparison-card h4 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.comparison-value {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.comparison-card.adjusted .comparison-value {
+    color: var(--success-color);
+}
+
+.comparison-change {
+    font-size: 0.9rem;
+    color: var(--success-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.comparison-details {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+.insights-box {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.insights-box h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+}
+
+.insight-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.insight-text {
+    flex: 1;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .correction-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .correction-controls .form-group {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+    
+    .correction-controls button {
+        width: 100%;
+    }
+    
+    .correction-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ===== PARTICLE BACKGROUND SYSTEM ===== */
 .particle-container {
     position: fixed;

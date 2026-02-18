@@ -1097,6 +1097,341 @@ window.addEventListener('beforeunload', () => {
     disableAutoRefresh();
 });
 
+// ===== ATTENDANCE CORRECTIONS FEATURE =====
+let attendanceCorrections = {};
+
+// Load corrections from localStorage
+function loadCorrections() {
+    try {
+        const saved = localStorage.getItem('attendanceCorrections');
+        if (saved) {
+            attendanceCorrections = JSON.parse(saved);
+        }
+    } catch (error) {
+        console.error('Error loading corrections:', error);
+        attendanceCorrections = {};
+    }
+}
+
+// Save corrections to localStorage
+function saveCorrections() {
+    try {
+        localStorage.setItem('attendanceCorrections', JSON.stringify(attendanceCorrections));
+    } catch (error) {
+        console.error('Error saving corrections:', error);
+    }
+}
+
+// Populate subject dropdown
+function populateCorrectionsDropdown() {
+    if (!attendanceData || !attendanceData.subjects) return;
+    
+    const select = document.getElementById('correctionSubject');
+    select.innerHTML = '<option value="">Choose a subject...</option>';
+    
+    attendanceData.subjects.forEach((subject, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${subject.subject} (${subject.attended}/${subject.total})`;
+        select.appendChild(option);
+    });
+}
+
+// Apply correction
+function applyCorrection() {
+    const subjectIndex = document.getElementById('correctionSubject').value;
+    const count = parseInt(document.getElementById('correctionsCount').value) || 0;
+    
+    if (!attendanceData || !subjectIndex || count <= 0) {
+        showNotification('Please select a subject and enter valid correction count', 'error');
+        return;
+    }
+    
+    const subject = attendanceData.subjects[subjectIndex];
+    
+    // Validate: can't correct more than absent classes
+    const maxCorrections = subject.total - subject.attended;
+    if (count > maxCorrections) {
+        showNotification(`Cannot correct ${count} classes. Maximum absent: ${maxCorrections}`, 'error');
+        return;
+    }
+    
+    // Store or update correction
+    if (!attendanceCorrections[subject.subject]) {
+        attendanceCorrections[subject.subject] = 0;
+    }
+    
+    const newTotal = attendanceCorrections[subject.subject] + count;
+    if (newTotal > maxCorrections) {
+        showNotification(`Total corrections (${newTotal}) exceed absent classes (${maxCorrections})`, 'error');
+        return;
+    }
+    
+    attendanceCorrections[subject.subject] = newTotal;
+    saveCorrections();
+    
+    // Update display
+    displayCorrections();
+    calculateAdjustedStats();
+    
+    showNotification(`✅ Corrected ${count} class(es) for ${subject.subject}`, 'success');
+    
+    // Reset inputs
+    document.getElementById('correctionSubject').value = '';
+    document.getElementById('correctionsCount').value = '1';
+}
+
+// Display active corrections
+function displayCorrections() {
+    const summaryDiv = document.getElementById('correctionsSummary');
+    
+    if (Object.keys(attendanceCorrections).length === 0) {
+        summaryDiv.classList.remove('active');
+        summaryDiv.innerHTML = '';
+        return;
+    }
+    
+    summaryDiv.classList.add('active');
+    
+    let html = '<h4 style="margin-bottom: 1rem; color: var(--text-primary);">📋 Active Corrections:</h4>';
+    
+    for (const [subject, count] of Object.entries(attendanceCorrections)) {
+        if (count > 0) {
+            html += `
+                <div class="correction-item">
+                    <div style="flex: 1;">
+                        <strong>${subject}</strong>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            ${count} absent class${count > 1 ? 'es' : ''} marked as present
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span class="correction-badge">+${count}</span>
+                        <button class="remove-correction" onclick="removeCorrection('${subject}')">✕</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    summaryDiv.innerHTML = html;
+}
+
+// Remove specific correction
+function removeCorrection(subjectName) {
+    if (confirm(`Remove all corrections for ${subjectName}?`)) {
+        delete attendanceCorrections[subjectName];
+        saveCorrections();
+        displayCorrections();
+        calculateAdjustedStats();
+        showNotification(`Corrections removed for ${subjectName}`, 'success');
+    }
+}
+
+// Clear all corrections
+function clearCorrections() {
+    if (Object.keys(attendanceCorrections).length === 0) {
+        showNotification('No corrections to clear', 'error');
+        return;
+    }
+    
+    if (confirm('Clear all attendance corrections?')) {
+        attendanceCorrections = {};
+        saveCorrections();
+        displayCorrections();
+        document.getElementById('adjustedStats').classList.remove('active');
+        document.getElementById('adjustedStats').innerHTML = '';
+        showNotification('All corrections cleared', 'success');
+    }
+}
+
+// Calculate adjusted statistics
+function calculateAdjustedStats() {
+    if (!attendanceData || Object.keys(attendanceCorrections).length === 0) {
+        document.getElementById('adjustedStats').classList.remove('active');
+        return;
+    }
+    
+    const adjustedDiv = document.getElementById('adjustedStats');
+    adjustedDiv.classList.add('active');
+    
+    // Calculate original and adjusted overall stats
+    let originalAttended = attendanceData.overall.attended;
+    let originalTotal = attendanceData.overall.total;
+    let adjustedAttended = originalAttended;
+    let totalCorrections = 0;
+    
+    // Calculate adjusted values
+    attendanceData.subjects.forEach(subject => {
+        if (attendanceCorrections[subject.subject]) {
+            adjustedAttended += attendanceCorrections[subject.subject];
+            totalCorrections += attendanceCorrections[subject.subject];
+        }
+    });
+    
+    const originalPercentage = parseFloat(attendanceData.overall.percentage);
+    const adjustedPercentage = (adjustedAttended / originalTotal) * 100;
+    const improvement = adjustedPercentage - originalPercentage;
+    
+    // Generate insights
+    let insights = [];
+    
+    if (adjustedPercentage >= 75 && originalPercentage < 75) {
+        insights.push({
+            icon: '🎉',
+            text: `Great news! With corrections, you've reached the 75% threshold (Safe Zone).`
+        });
+    } else if (adjustedPercentage >= 60 && originalPercentage < 60) {
+        insights.push({
+            icon: '✅',
+            text: `You've moved into the Warning Zone (60%+). ${(75 - adjustedPercentage).toFixed(1)}% more needed for Safe Zone.`
+        });
+    } else if (adjustedPercentage < 60) {
+        insights.push({
+            icon: '⚠️',
+            text: `Still in Critical Zone. Need ${Math.ceil((0.6 * originalTotal - adjustedAttended) / 0.4)} more classes for 60%.`
+        });
+    } else if (adjustedPercentage >= 75) {
+        insights.push({
+            icon: '🌟',
+            text: `Excellent! You're in the Safe Zone with ${(adjustedPercentage - 75).toFixed(1)}% buffer above 75%.`
+        });
+    }
+    
+    insights.push({
+        icon: '📊',
+        text: `Corrected ${totalCorrections} mismarked class${totalCorrections > 1 ? 'es' : ''} across ${Object.keys(attendanceCorrections).length} subject${Object.keys(attendanceCorrections).length > 1 ? 's' : ''}.`
+    });
+    
+    if (improvement > 0) {
+        insights.push({
+            icon: '📈',
+            text: `Overall attendance improved by ${improvement.toFixed(2)}% after corrections.`
+        });
+    }
+    
+    // Subject-wise corrections insights
+    let subjectInsights = [];
+    attendanceData.subjects.forEach(subject => {
+        if (attendanceCorrections[subject.subject]) {
+            const origPercent = parseFloat(subject.percentage);
+            const corrections = attendanceCorrections[subject.subject];
+            const adjAttended = subject.attended + corrections;
+            const adjPercent = (adjAttended / subject.total) * 100;
+            const change = adjPercent - origPercent;
+            
+            let status = '';
+            if (adjPercent >= 75 && origPercent < 75) {
+                status = '✨ Now above 75%!';
+            } else if (adjPercent >= 60 && origPercent < 60) {
+                status = '✅ Now above 60%';
+            }
+            
+            subjectInsights.push({
+                subject: subject.subject,
+                original: origPercent,
+                adjusted: adjPercent,
+                change: change,
+                corrections: corrections,
+                status: status
+            });
+        }
+    });
+    
+    // Build HTML
+    let html = `
+        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">
+            📊 Adjusted Attendance Summary
+        </h4>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h4>Original Attendance</h4>
+                <div class="comparison-value">${originalPercentage.toFixed(2)}%</div>
+                <div class="comparison-details">${originalAttended}/${originalTotal} classes</div>
+            </div>
+            
+            <div class="comparison-card adjusted">
+                <h4>Adjusted Attendance</h4>
+                <div class="comparison-value">${adjustedPercentage.toFixed(2)}%</div>
+                <div class="comparison-change">
+                    <span>↑ +${improvement.toFixed(2)}%</span>
+                </div>
+                <div class="comparison-details">${adjustedAttended}/${originalTotal} classes (+${totalCorrections} corrected)</div>
+            </div>
+        </div>
+        
+        <div class="insights-box">
+            <h4>💡 Key Insights</h4>
+            ${insights.map(insight => `
+                <div class="insight-item">
+                    <span class="insight-icon">${insight.icon}</span>
+                    <span class="insight-text">${insight.text}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    // Add subject-wise comparison if there are corrections
+    if (subjectInsights.length > 0) {
+        html += `
+            <div style="margin-top: 1.5rem;">
+                <h4 style="margin-bottom: 1rem; color: var(--text-primary);">📖 Subject-wise Adjustments</h4>
+                <div class="comparison-grid">
+        `;
+        
+        subjectInsights.forEach(item => {
+            const statusBadge = item.status ? `<div style="color: var(--success-color); font-weight: 600; font-size: 0.85rem; margin-top: 0.5rem;">${item.status}</div>` : '';
+            
+            html += `
+                <div class="comparison-card adjusted">
+                    <h4>${item.subject}</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Original</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${item.original.toFixed(1)}%</div>
+                        </div>
+                        <div style="font-size: 1.5rem; color: var(--text-secondary);">→</div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--success-color);">Adjusted</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color);">${item.adjusted.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                    <div class="comparison-change" style="margin-top: 0.5rem;">
+                        ↑ +${item.change.toFixed(2)}% (+${item.corrections} class${item.corrections > 1 ? 'es' : ''})
+                    </div>
+                    ${statusBadge}
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    
+    adjustedDiv.innerHTML = html;
+}
+
+// Update displayDashboard to initialize corrections
+const originalDisplayDashboardFunc = displayDashboard;
+displayDashboard = function(data) {
+    originalDisplayDashboardFunc(data);
+    loadCorrections();
+    populateCorrectionsDropdown();
+    displayCorrections();
+    if (Object.keys(attendanceCorrections).length > 0) {
+        calculateAdjustedStats();
+    }
+};
+
+// Initialize corrections on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadCorrections();
+});
+
+
 function createParticleSystem() {
     const container = document.getElementById('particleContainer');
     if (!container) return;

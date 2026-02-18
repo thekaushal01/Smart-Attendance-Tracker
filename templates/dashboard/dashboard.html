@@ -84,6 +84,38 @@
                 <div id="predictionResult"></div>
             </div>
 
+            <div class="corrections-section">
+                <div class="section-header">
+                    <h3>✏️ Attendance Corrections</h3>
+                    <button class="btn btn-secondary" onclick="clearCorrections()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        🗑️ Clear All
+                    </button>
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.95rem;">
+                    Adjust mismarked attendance without affecting original data. Track corrections and see adjusted insights.
+                </p>
+                
+                <div class="correction-controls">
+                    <div class="form-group" style="flex: 1; min-width: 200px;">
+                        <label for="correctionSubject">Select Subject</label>
+                        <select id="correctionSubject" class="correction-select">
+                            <option value="">Choose a subject...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label for="correctionsCount">Classes to Mark Present</label>
+                        <input type="number" id="correctionsCount" value="1" min="1" max="20" class="correction-input">
+                    </div>
+                    <button class="btn" onclick="applyCorrection()" style="align-self: flex-end;">
+                        ✅ Apply Correction
+                    </button>
+                </div>
+
+                <div id="correctionsSummary" class="corrections-summary"></div>
+                
+                <div id="adjustedStats" class="adjusted-stats"></div>
+            </div>
+
             <div class="charts-section">
                 <div class="chart-container">
                     <h3 class="chart-title">Attendance Distribution</h3>
