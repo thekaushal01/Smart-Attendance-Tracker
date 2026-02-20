@@ -9,12 +9,12 @@ function toggleTheme() {
     
     if (body.getAttribute('data-theme') === 'dark') {
         body.removeAttribute('data-theme');
-        themeIcon.textContent = '🌙';
+        themeIcon.innerHTML = '<i class="fi fi-rr-moon"></i>';
         themeText.textContent = 'Dark Mode';
         localStorage.setItem('theme', 'light');
     } else {
         body.setAttribute('data-theme', 'dark');
-        themeIcon.textContent = '☀️';
+        themeIcon.innerHTML = '<i class="fi fi-rr-sun"></i>';
         themeText.textContent = 'Light Mode';
         localStorage.setItem('theme', 'dark');
     }
@@ -25,7 +25,7 @@ function initTheme() {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         document.body.setAttribute('data-theme', 'dark');
-        document.getElementById('theme-icon').textContent = '☀️';
+        document.getElementById('theme-icon').innerHTML = '<i class="fi fi-rr-sun"></i>';
         document.getElementById('theme-text').textContent = 'Light Mode';
     }
 }
@@ -512,7 +512,7 @@ function simulateAttendance() {
     
     // Determine result styling
     const changeClass = change > 0 ? 'success' : change < 0 ? 'danger' : 'warning';
-    const changeIcon = change > 0 ? '📈' : change < 0 ? '📉' : '➡️';
+    const changeIcon = change > 0 ? '<i class="fi fi-rr-chart-line-up"></i>' : change < 0 ? '<i class="fi fi-rr-chart-line-down"></i>' : '<i class="fi fi-rr-arrows-h"></i>';
     const changeText = change > 0 ? 'increase' : change < 0 ? 'decrease' : 'no change';
     
     // Generate recommendation based on new percentage
@@ -520,13 +520,13 @@ function simulateAttendance() {
     let recommendationClass = 'success-message';
     
     if (newPercentage < 60) {
-        recommendation = '⚠️ <strong>Critical:</strong> Below 60% - High risk zone!';
+        recommendation = '<i class="fi fi-rr-exclamation"></i> <strong>Critical:</strong> Below 60% - High risk zone!';
         recommendationClass = 'error-message';
     } else if (newPercentage < 75) {
-        recommendation = '⚡ <strong>Warning:</strong> Below 75% - Consider attending more classes';
+        recommendation = '<i class="fi fi-rr-triangle-warning"></i> <strong>Warning:</strong> Below 75% - Consider attending more classes';
         recommendationClass = 'warning-message';
     } else {
-        recommendation = '✅ <strong>Safe:</strong> Above 75% - Good attendance level!';
+        recommendation = '<i class="fi fi-rr-check-circle"></i> <strong>Safe:</strong> Above 75% - Good attendance level!';
         recommendationClass = 'success-message';
     }
     
@@ -557,7 +557,7 @@ function simulateAttendance() {
         
         resultHTML += `
             <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; font-size: 0.9rem;">
-                <strong>💡 Additional Insights:</strong><br>
+                <strong><i class="fi fi-rr-bulb"></i> Additional Insights:</strong><br>
                 • If only attending ${classesToAttend}: ${attendOnlyPercentage.toFixed(2)}%<br>
                 • If only missing ${classesToMiss}: ${missOnlyPercentage.toFixed(2)}%<br>
                 • Combined impact: ${newPercentage.toFixed(2)}%
@@ -1174,7 +1174,7 @@ function applyCorrection() {
     displayCorrections();
     calculateAdjustedStats();
     
-    showNotification(`✅ Corrected ${count} class(es) for ${subject.subject}`, 'success');
+    showNotification(`<i class="fi fi-rr-check-circle"></i> Corrected ${count} class(es) for ${subject.subject}`, 'success');
     
     // Reset inputs
     document.getElementById('correctionSubject').value = '';
@@ -1193,7 +1193,7 @@ function displayCorrections() {
     
     summaryDiv.classList.add('active');
     
-    let html = '<h4 style="margin-bottom: 1rem; color: var(--text-primary);">📋 Active Corrections:</h4>';
+    let html = '<h4 style="margin-bottom: 1rem; color: var(--text-primary);"><i class="fi fi-rr-list-check"></i> Active Corrections:</h4>';
     
     for (const [subject, count] of Object.entries(attendanceCorrections)) {
         if (count > 0) {
@@ -1278,34 +1278,34 @@ function calculateAdjustedStats() {
     
     if (adjustedPercentage >= 75 && originalPercentage < 75) {
         insights.push({
-            icon: '🎉',
+            icon: '<i class="fi fi-rr-trophy"></i>',
             text: `Great news! With corrections, you've reached the 75% threshold (Safe Zone).`
         });
     } else if (adjustedPercentage >= 60 && originalPercentage < 60) {
         insights.push({
-            icon: '✅',
+            icon: '<i class="fi fi-rr-check-circle"></i>',
             text: `You've moved into the Warning Zone (60%+). ${(75 - adjustedPercentage).toFixed(1)}% more needed for Safe Zone.`
         });
     } else if (adjustedPercentage < 60) {
         insights.push({
-            icon: '⚠️',
+            icon: '<i class="fi fi-rr-exclamation"></i>',
             text: `Still in Critical Zone. Need ${Math.ceil((0.6 * originalTotal - adjustedAttended) / 0.4)} more classes for 60%.`
         });
     } else if (adjustedPercentage >= 75) {
         insights.push({
-            icon: '🌟',
+            icon: '<i class="fi fi-rr-star"></i>',
             text: `Excellent! You're in the Safe Zone with ${(adjustedPercentage - 75).toFixed(1)}% buffer above 75%.`
         });
     }
     
     insights.push({
-        icon: '📊',
+        icon: '<i class="fi fi-rr-chart-histogram"></i>',
         text: `Corrected ${totalCorrections} mismarked class${totalCorrections > 1 ? 'es' : ''} across ${Object.keys(attendanceCorrections).length} subject${Object.keys(attendanceCorrections).length > 1 ? 's' : ''}.`
     });
     
     if (improvement > 0) {
         insights.push({
-            icon: '📈',
+            icon: '<i class="fi fi-rr-chart-line-up"></i>',
             text: `Overall attendance improved by ${improvement.toFixed(2)}% after corrections.`
         });
     }
@@ -1322,9 +1322,9 @@ function calculateAdjustedStats() {
             
             let status = '';
             if (adjPercent >= 75 && origPercent < 75) {
-                status = '✨ Now above 75%!';
+                status = '<i class="fi fi-rr-sparkles"></i> Now above 75%!';
             } else if (adjPercent >= 60 && origPercent < 60) {
-                status = '✅ Now above 60%';
+                status = '<i class="fi fi-rr-check-circle"></i> Now above 60%';
             }
             
             subjectInsights.push({
@@ -1341,7 +1341,7 @@ function calculateAdjustedStats() {
     // Build HTML
     let html = `
         <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--text-primary);">
-            📊 Adjusted Attendance Summary
+            <i class="fi fi-rr-chart-histogram"></i> Adjusted Attendance Summary
         </h4>
         
         <div class="comparison-grid">
@@ -1362,7 +1362,7 @@ function calculateAdjustedStats() {
         </div>
         
         <div class="insights-box">
-            <h4>💡 Key Insights</h4>
+            <h4><i class="fi fi-rr-bulb"></i> Key Insights</h4>
             ${insights.map(insight => `
                 <div class="insight-item">
                     <span class="insight-icon">${insight.icon}</span>
@@ -1376,7 +1376,7 @@ function calculateAdjustedStats() {
     if (subjectInsights.length > 0) {
         html += `
             <div style="margin-top: 1.5rem;">
-                <h4 style="margin-bottom: 1rem; color: var(--text-primary);">📖 Subject-wise Adjustments</h4>
+                <h4 style="margin-bottom: 1rem; color: var(--text-primary);"><i class="fi fi-rr-book-open-reader"></i> Subject-wise Adjustments</h4>
                 <div class="comparison-grid">
         `;
         

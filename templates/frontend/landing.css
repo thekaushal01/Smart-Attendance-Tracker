@@ -304,7 +304,7 @@ nav.scrolled {
     align-items: center;
     justify-content: center;
     position: relative;
-    padding: clamp(4rem, 10vh, 8rem) 5% clamp(3rem, 8vh, 6rem);
+    padding: clamp(5rem, 11vh, 8rem) 5% clamp(3rem, 8vh, 6rem);
 }
 
 .hero-content {
@@ -802,7 +802,7 @@ h1 {
     display: grid;
     grid-template-columns: 1fr;
     gap: clamp(1rem, 3vw, 2rem);
-    align-items: center;
+    align-items: start;
     text-align: center;
 }
 
@@ -818,6 +818,13 @@ h1 {
     flex-shrink: 0;
     transition: transform 0.3s ease;
     margin: 0 auto;
+}
+
+.feature-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .feature-card:hover .feature-icon {
@@ -1032,7 +1039,7 @@ footer {
     }
     
     .hero {
-        padding: 5rem 1.25rem 3rem;
+        padding: 6rem 1.25rem 3rem;
     }
     
     .stats-container,
@@ -1202,10 +1209,12 @@ footer {
     .feature-content {
         grid-template-columns: auto 1fr;
         text-align: left;
+        align-items: start;
     }
     
     .feature-icon {
         margin: 0;
+        align-self: start;
     }
     
     .feature-card {
