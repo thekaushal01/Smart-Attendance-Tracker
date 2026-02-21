@@ -137,3 +137,171 @@ const statsObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.stat-box').forEach(box => {
     statsObserver.observe(box);
 });
+
+// ===== PAGE TRANSITION ANIMATION =====
+
+// Create transition overlay HTML
+function createTransitionOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    overlay.innerHTML = `
+        <div class="transition-particle-container">
+            <div class="transition-particle"></div>
+            <div class="transition-particle"></div>
+            <div class="transition-particle"></div>
+            <div class="transition-particle"></div>
+        </div>
+        <div class="transition-content">\n            <h2 class="transition-title">Loading Your Dashboard</h2>
+            
+            <div class="transition-graph-container">
+                <div class="transition-graph">
+                    <svg viewBox="0 0 400 200" style="width: 100%; height: 100%;">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Graph Path -->
+                        <path class="graph-path" d="M 0 160 Q 60 140, 80 120 T 160 80 T 240 50 T 320 20 L 360 10" />
+                        
+                        <!-- Fill area under graph -->
+                        <path class="graph-fill" d="M 0 160 Q 60 140, 80 120 T 160 80 T 240 50 T 320 20 L 360 10 L 360 180 L 0 180 Z" />
+                    </svg>
+                    
+                    <!-- Axis lines -->
+                    <div class="graph-axis">
+                        <div class="axis-line axis-y"></div>
+                        <div class="axis-line axis-x"></div>
+                        
+                        <!-- Y-axis labels -->
+                        <span class="graph-label-y" style="top: 0;">100%</span>
+                        <span class="graph-label-y" style="top: 50%;">75%</span>
+                        <span class="graph-label-y" style="bottom: 0;">50%</span>
+                        
+                        <!-- X-axis labels -->
+                        <span class="graph-label-x" style="left: 0;">Week 1</span>
+                        <span class="graph-label-x" style="left: 33%;">Week 2</span>
+                        <span class="graph-label-x" style="left: 66%;">Week 3</span>
+                        <span class="graph-label-x" style="right: 0;">Week 4</span>
+                    </div>
+                    
+                    <!-- Animated dots -->
+                    <div class="graph-dots">
+                        <div class="graph-dot"></div>
+                        <div class="graph-dot"></div>
+                        <div class="graph-dot"></div>
+                        <div class="graph-dot"></div>
+                        <div class="graph-dot"></div>
+                        <div class="graph-dot"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="transition-insights">
+                <div class="insight-item">
+                    <div class="insight-icon">
+                        <i class="fi fi-rr-chart-line-up"></i>
+                    </div>
+                    <div class="insight-text">
+                        Real-time attendance tracking across all subjects
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">
+                        <i class="fi fi-rr-target"></i>
+                    </div>
+                    <div class="insight-text">
+                        AI-powered predictions to maintain 75% attendance
+                    </div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-icon">
+                        <i class="fi fi-rr-bulb"></i>
+                    </div>
+                    <div class="insight-text">
+                        Personalized insights and actionable recommendations
+                    </div>
+                </div>
+            </div>
+            
+            <div class="transition-progress">
+                <div class="progress-label">
+                    <span>Initializing Dashboard...</span>
+                    <span class="progress-percentage" id="progressPercentage">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+// Animate progress percentage
+function animateProgressText(element, duration = 2500) {
+    const startTime = Date.now();
+    
+    function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min((elapsed / duration) * 100, 100);
+        element.textContent = Math.floor(progress) + '%';
+        
+        if (progress < 100) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
+}
+
+// Handle page transition
+function handlePageTransition(targetUrl) {
+    // Create and show overlay
+    const overlay = createTransitionOverlay();
+    
+    // Small delay for DOM insertion
+    setTimeout(() => {
+        overlay.classList.add('active');
+        
+        // Animate progress text
+        const progressText = overlay.querySelector('#progressPercentage');
+        if (progressText) {
+            animateProgressText(progressText, 2500);
+        }
+    }, 50);
+    
+    // Navigate after animation completes
+    setTimeout(() => {
+        window.location.href = targetUrl;
+    }, 3000);
+}
+
+// Add event listeners to all dashboard links
+function initTransitionLinks() {
+    const dashboardLinks = document.querySelectorAll('a[href="/app"]');
+    
+    dashboardLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Check if it's an internal navigation
+            if (this.hostname === window.location.hostname) {
+                e.preventDefault();
+                handlePageTransition(this.href);
+            }
+        });
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initTransitionLinks();
+});
+
+// Also initialize immediately if DOM is already loaded
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    initTransitionLinks();
+}
