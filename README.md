@@ -1,13 +1,8 @@
-<h1 align="center">
-  <img src="assets/logo.png" alt="Smart Attendance Tracker Logo" width="40" style="vertical-align: middle;"/>
-  Smart Attendance Tracker
-</h1>
+# 📚 Smart Attendance Tracker
 
-<p align="center">
-  A modern, AI-powered attendance tracking system designed exclusively for LNCT College students. Get real-time insights, predictions, and smart recommendations to maintain   optimal attendance.
-</p>
+A modern, AI-powered attendance tracking system designed exclusively for LNCT College students. Get real-time insights, predictions, and smart recommendations to maintain optimal attendance.
 
-
+![Smart Attendance Tracker](assets/logo.png)
 
 ## 🌟 Features
 
@@ -101,11 +96,18 @@
 Smart-Attendance-Tracker/
 ├── app.py                 # Main Flask application
 ├── requirements.txt       # Python dependencies
-├── assets/               # Static assets (logo, images)
-│   └── logo.png
+├── .gitignore            # Git ignore file
+├── assets/               # Static assets
+│   └── logo.png          # Application logo
 ├── templates/            # HTML templates
-│   ├── landing.html      # Landing page
-│   └── index.html        # Dashboard page
+│   ├── frontend/         # Landing page files
+│   │   ├── landing.html  # Landing page HTML
+│   │   ├── landing.css   # Landing page styles
+│   │   └── landing.js    # Landing page scripts
+│   └── dashboard/        # Dashboard files
+│       ├── dashboard.html # Dashboard HTML
+│       ├── dashboard.css  # Dashboard styles
+│       └── dashboard.js   # Dashboard scripts
 └── venv/                 # Virtual environment (not tracked)
 ```
 
