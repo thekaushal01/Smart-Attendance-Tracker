@@ -87,6 +87,30 @@
                 <div id="predictionResult"></div>
             </div>
 
+            <div class="charts-section">
+                <div class="chart-container">
+                    <h3 class="chart-title">Attendance Distribution</h3>
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Subject Performance</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fi fi-rr-book-open-reader"></i> Subject Analysis</h2>
+                    <div class="view-toggle">
+                        <button class="active" onclick="toggleView('grid')">Grid</button>
+                        <button onclick="toggleView('list')">List</button>
+                    </div>
+                </div>
+                
+                <div class="subjects-grid active" id="subjectsGrid"></div>
+                <div class="subjects-list" id="subjectsList"></div>
+            </div>
+
             <div class="corrections-section">
                 <div class="section-header">
                     <h3><i class="fi fi-rr-edit"></i> Attendance Corrections</h3>
@@ -117,30 +141,6 @@
                 <div id="correctionsSummary" class="corrections-summary"></div>
                 
                 <div id="adjustedStats" class="adjusted-stats"></div>
-            </div>
-
-            <div class="charts-section">
-                <div class="chart-container">
-                    <h3 class="chart-title">Attendance Distribution</h3>
-                    <canvas id="attendanceChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3 class="chart-title">Subject Performance</h3>
-                    <canvas id="performanceChart"></canvas>
-                </div>
-            </div>
-
-            <div class="subjects-section">
-                <div class="section-header">
-                    <h2 class="section-title"><i class="fi fi-rr-book-open-reader"></i> Subject Analysis</h2>
-                    <div class="view-toggle">
-                        <button class="active" onclick="toggleView('grid')">Grid</button>
-                        <button onclick="toggleView('list')">List</button>
-                    </div>
-                </div>
-                
-                <div class="subjects-grid active" id="subjectsGrid"></div>
-                <div class="subjects-list" id="subjectsList"></div>
             </div>
 
             <div class="actions-section">
