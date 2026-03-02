@@ -331,6 +331,17 @@ nav.scrolled {
     }
 }
 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .hero-badge {
     display: none;
 }
@@ -496,7 +507,7 @@ h1 {
 .dashboard-mockup {
     position: relative;
     width: 100%;
-    height: clamp(20rem, 50vw, 31.25rem);
+    height: clamp(16rem, 50vw, 31.25rem);
     background: rgba(30, 41, 59, 0.5);
     border-radius: 1.25rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1039,10 +1050,14 @@ footer {
     }
     
     .hero {
-        padding: 6rem 1.25rem 3rem;
+        padding: 5.5rem 1.25rem 2.5rem;
     }
     
-    .stats-container,
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.875rem;
+    }
+    
     .steps-container {
         gap: 1.25rem;
     }
@@ -1051,17 +1066,22 @@ footer {
         padding: 1.25rem;
     }
     
+    .dashboard-mockup {
+        height: clamp(14rem, 70vw, 18rem);
+    }
+    
     .mockup-chart {
-        padding: 0.5rem 1rem 1rem 1.5rem;
+        padding: 0.5rem 0.75rem 1rem 1.5rem;
+        height: clamp(7rem, 20vw, 10rem);
     }
     
     .chart-y-axis {
-        font-size: 0.55rem;
-        left: 0.125rem;
+        font-size: 0.5rem;
+        left: 0.1rem;
     }
     
     .chart-x-axis {
-        font-size: 0.5rem;
+        font-size: 0.45rem;
     }
     
     .cta-buttons {
@@ -1072,15 +1092,85 @@ footer {
     .btn {
         width: 100%;
     }
+    
+    .section-title {
+        font-size: clamp(1.5rem, 7vw, 2rem);
+    }
+    
+    .cta-content {
+        padding: 1.5rem 1rem;
+    }
 }
 
-@media (min-width: 481px) and (max-width: 767px) {
+@media (min-width: 481px) and (max-width: 600px) {
+    .hero {
+        padding: 5.5rem 1.5rem 3rem;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .hero-content {
+        gap: 2rem;
+    }
+
+    .feature-card {
+        padding: 1.5rem;
+    }
+
+    .dashboard-mockup {
+        height: clamp(16rem, 60vw, 22rem);
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 767px) {
+    .hero {
+        padding: 6rem 2rem 3rem;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.875rem;
+    }
+
+    .stat-number {
+        font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    }
+
     .hero-content {
         gap: 2.5rem;
     }
-    
+
     .feature-card {
         padding: 1.75rem;
+    }
+
+    .steps-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .step:nth-child(2)::after {
+        display: none;
+    }
+
+    .step::after {
+        content: '↓';
+        bottom: -1.5rem;
+        font-size: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
     }
 }
 
@@ -1149,7 +1239,12 @@ footer {
     }
     
     .steps-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    
+    .step:nth-child(2)::after {
+        display: none;
     }
     
     .step::after {
@@ -1160,10 +1255,33 @@ footer {
         top: auto;
         right: auto;
     }
+    
+    .stats-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .feature-content {
+        grid-template-columns: auto 1fr;
+        text-align: left;
+    }
+    
+    .feature-icon {
+        margin: 0;
+        align-self: start;
+    }
 }
 
-/* Accessibility: Reduced motion support for logo animations */
+/* Accessibility: Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
     .logo,
     .logo-icon,
     .logo-icon img {
@@ -1177,6 +1295,23 @@ footer {
     
     .logo:hover .logo-icon {
         transform: none;
+    }
+    
+    .shape,
+    .animated-bg::before,
+    .stat-icon,
+    .dashboard-mockup,
+    .chart-bar {
+        animation: none !important;
+    }
+    
+    .reveal,
+    .feature-card,
+    .step,
+    .stat-box {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
     }
 }
 
