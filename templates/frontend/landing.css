@@ -31,7 +31,7 @@ body {
     min-height: 100vh;
 }
 
-/* ===== ANIMATED BACKGROUND ===== */
+/* Animated Background — the fixed dark gradient behind everything, gives the page that deep space feel */
 .animated-bg {
     position: fixed;
     top: 0;
@@ -53,94 +53,31 @@ body {
         radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-    animation: bgShift 20s ease infinite;
 }
 
-@keyframes bgShift {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(50px, -30px) scale(1.1); }
-    66% { transform: translate(-30px, 50px) scale(0.95); }
-}
-
-.floating-shapes {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-.shape {
-    position: absolute;
-    opacity: 0.1;
-    animation: float 20s infinite ease-in-out;
-}
-
-.shape:nth-child(1) {
-    width: 300px;
-    height: 300px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-    top: 10%;
-    left: -10%;
-    animation-delay: 0s;
-    animation-duration: 25s;
-}
-
-.shape:nth-child(2) {
-    width: 200px;
-    height: 200px;
-    background: linear-gradient(135deg, var(--secondary), var(--accent));
-    border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
-    top: 60%;
-    right: -5%;
-    animation-delay: -7s;
-    animation-duration: 20s;
-}
-
-.shape:nth-child(3) {
-    width: 250px;
-    height: 250px;
-    background: linear-gradient(135deg, var(--accent), var(--primary));
-    border-radius: 41% 59% 41% 59% / 41% 59% 41% 59%;
-    bottom: 10%;
-    left: 20%;
-    animation-delay: -14s;
-    animation-duration: 30s;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    25% {
-        transform: translate(100px, -100px) rotate(90deg);
-    }
-    50% {
-        transform: translate(200px, 50px) rotate(180deg);
-    }
-    75% {
-        transform: translate(-50px, 100px) rotate(270deg);
-    }
-}
-
-/* ===== NAVIGATION ===== */
+/* Navigation — fixed top navbar that turns into a floating glass pill once you start scrolling */
 nav {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    padding: 0.75rem 5%;
-    transition: all 0.3s ease;
+    padding: 1.25rem 5%;
+    transition: padding 0.35s ease;
     background: transparent;
 }
 
 nav.scrolled {
-    background: rgba(15, 23, 42, 0.98);
-    backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.75rem 3%;
+}
+
+nav.scrolled .logo-icon {
+    width: clamp(2rem, 5vw, 2.375rem);
+    height: clamp(2rem, 5vw, 2.375rem);
+}
+
+nav.scrolled .logo {
+    font-size: clamp(0.9rem, 3.5vw, 1.35rem);
 }
 
 .nav-container {
@@ -150,6 +87,27 @@ nav.scrolled {
     justify-content: space-between;
     align-items: center;
     position: relative;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    transition:
+        background 0.35s ease,
+        box-shadow 0.35s ease,
+        border-radius 0.35s ease,
+        padding 0.35s ease,
+        max-width 0.35s ease,
+        border-color 0.35s ease;
+    will-change: background, border-radius;
+}
+
+nav.scrolled .nav-container {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.2);
+    border-radius: 1rem;
+    padding: 0.5rem 1.5rem;
+    max-width: 960px;
 }
 
 .logo {
@@ -164,7 +122,7 @@ nav.scrolled {
     background-clip: text;
     text-decoration: none;
     z-index: 1001;
-    transition: all 0.3s ease;
+    transition: font-size 0.35s ease, transform 0.3s ease;
     position: relative;
 }
 
@@ -189,15 +147,13 @@ nav.scrolled {
     padding: 0.375rem;
     position: relative;
     flex-shrink: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.35s ease, height 0.35s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
     border: 2px solid rgba(59, 130, 246, 0.5);
     box-shadow: 
         0 0.125rem 0.5rem rgba(0, 0, 0, 0.2),
         0 0.25rem 1rem rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
-
-
 
 .logo-icon::after {
     content: '';
@@ -295,9 +251,7 @@ nav.scrolled {
     width: 100%;
 }
 
-
-
-/* ===== HERO SECTION ===== */
+/* Hero Section — the big first thing you see when you land on the page, headline + mockup side by side */
 .hero {
     min-height: 100vh;
     display: flex;
@@ -313,7 +267,7 @@ nav.scrolled {
     display: grid;
     grid-template-columns: 1fr;
     gap: clamp(2rem, 5vw, 4rem);
-    align-items: center;
+    align-items: start;
 }
 
 .hero-text {
@@ -340,10 +294,6 @@ nav.scrolled {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.hero-badge {
-    display: none;
 }
 
 h1 {
@@ -456,8 +406,6 @@ h1 {
     transform: translateY(0) scale(0.98);
 }
 
-
-
 .btn-secondary {
     background: rgba(255, 255, 255, 0.05);
     color: var(--white);
@@ -487,9 +435,11 @@ h1 {
     width: 60%;
 }
 
-/* ===== HERO VISUAL ===== */
+/* Hero Visual — the dashboard mockup card on the right side, stays sticky as you scroll down */
 .hero-visual {
-    position: relative;
+    position: sticky;
+    top: 6rem;
+    align-self: start;
     animation: fadeInRight 1s ease-out;
 }
 
@@ -653,7 +603,7 @@ h1 {
     }
 }
 
-/* ===== STATS SECTION ===== */
+/* Stats Section — the four quick-glance numbers that show how many students, classes, and uptime we have */
 .stats-section {
     padding: clamp(3rem, 8vw, 4rem) 5%;
     position: relative;
@@ -696,8 +646,6 @@ h1 {
     }
 }
 
-
-
 .stat-icon {
     font-size: clamp(2rem, 4vw, 3rem);
     margin-bottom: clamp(0.75rem, 2vw, 1rem);
@@ -731,7 +679,7 @@ h1 {
     font-size: clamp(0.875rem, 2vw, 1rem);
 }
 
-/* ===== FEATURES SECTION (STACKING CARDS) ===== */
+/* Features Section — stacking cards that each highlight one core feature of the app */
 .features-section {
     padding: clamp(4rem, 10vw, 6rem) 5%;
     position: relative;
@@ -854,7 +802,7 @@ h1 {
     line-height: 1.8;
 }
 
-/* ===== HOW IT WORKS ===== */
+/* How It Works — three simple steps walking the user through login, fetch, and insights */
 .how-it-works {
     padding: clamp(4rem, 10vw, 6rem) 5%;
     background: rgba(30, 41, 59, 0.3);
@@ -940,7 +888,7 @@ h1 {
     line-height: 1.8;
 }
 
-/* ===== CTA SECTION ===== */
+/* CTA Section — the final push to get the user to actually click and open the app */
 .cta-section {
     padding: clamp(4rem, 12vw, 8rem) 5%;
     text-align: center;
@@ -996,7 +944,7 @@ h1 {
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
-/* ===== FOOTER ===== */
+/* Footer — just the links and copyright line at the very bottom, nothing fancy */
 footer {
     padding: clamp(2rem, 5vw, 3rem) 5%;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -1031,7 +979,7 @@ footer {
     font-size: clamp(0.8rem, 1.5vw, 0.9rem);
 }
 
-/* ===== SCROLL ANIMATIONS ===== */
+/* Scroll Animations — elements start hidden and fade in once they enter the viewport */
 .reveal {
     opacity: 0;
     transform: translateY(50px);
@@ -1043,7 +991,7 @@ footer {
     transform: translateY(0);
 }
 
-/* ===== RESPONSIVE - MOBILE FIRST ===== */
+/* Responsive - Mobile First — layout adjustments for every screen size, starting from the smallest */
 @media (max-width: 480px) {
     :root {
         font-size: 14px;
@@ -1223,6 +1171,9 @@ footer {
     
     .hero-visual {
         order: -1;
+        position: relative;
+        top: auto;
+        align-self: auto;
     }
     
     .step::after {
@@ -1271,7 +1222,7 @@ footer {
     }
 }
 
-/* Accessibility: Reduced motion support */
+/* Accessibility — tones down all animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -1297,8 +1248,6 @@ footer {
         transform: none;
     }
     
-    .shape,
-    .animated-bg::before,
     .stat-icon,
     .dashboard-mockup,
     .chart-bar {
@@ -1315,7 +1264,7 @@ footer {
     }
 }
 
-/* Mobile optimization for logo */
+/* Logo on small screens — tightens the gap so the logo fits comfortably on tiny phones */
 @media (max-width: 480px) {
     .logo {
         gap: 0.5rem;
@@ -1391,14 +1340,3 @@ footer {
     }
 }
 
-/* ===== LOADING ANIMATIONS ===== */
-@keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
-}
-
-.loading {
-    animation: shimmer 2s infinite linear;
-    background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
-    background-size: 1000px 100%;
-}
