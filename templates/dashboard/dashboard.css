@@ -20,6 +20,9 @@ html {
     --border-color: #e2e8f0;
     --shadow: 0 0.25rem 0.375rem -0.0625rem rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 0.625rem 0.9375rem -0.1875rem rgba(0, 0, 0, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 0.25rem 1.5rem rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="dark"] {
@@ -28,6 +31,15 @@ html {
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
     --border-color: #334155;
+    --glass-bg: rgba(30, 41, 59, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 1.5625rem 5rem rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode gets the same moody gradient background as the landing page */
+body[data-theme="dark"],
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 }
 
 body {
@@ -50,11 +62,14 @@ body {
 .header {
     text-align: center;
     margin-bottom: clamp(1.5rem, 4vw, 2rem);
-    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.55), rgba(139, 92, 246, 0.55));
+    backdrop-filter: blur(1.25rem) saturate(180%);
+    -webkit-backdrop-filter: blur(1.25rem) saturate(180%);
     color: white;
     padding: clamp(1.5rem, 4vw, 2rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .header h1 {
@@ -78,8 +93,10 @@ body {
 }
 
 .theme-toggle {
-    background: var(--card-bg);
-    border: 0.125rem solid var(--border-color);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
+    border: 0.125rem solid var(--glass-border);
     border-radius: 3.125rem;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -88,6 +105,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     font-size: clamp(0.875rem, 2vw, 1rem);
+    box-shadow: var(--glass-shadow);
 }
 
 .theme-toggle:hover {
@@ -95,12 +113,14 @@ body {
 }
 
 .login-section {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     padding: clamp(1rem, 3vw, 2rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow);
+    box-shadow: var(--glass-shadow);
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--glass-border);
 }
 
 .form-grid {
@@ -206,11 +226,13 @@ body {
 }
 
 .stat-card {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     padding: clamp(1rem, 2.5vw, 1.5rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -219,7 +241,8 @@ body {
 
 .stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 1.875rem 5rem rgba(99, 102, 241, 0.25);
 }
 
 .stat-card::before {
@@ -294,8 +317,10 @@ body {
 
 .view-toggle {
     display: flex;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
+    border: 1px solid var(--glass-border);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -321,19 +346,22 @@ body {
 }
 
 .subject-card {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
     padding: clamp(1rem, 2.5vw, 1.5rem);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
 .subject-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 1.875rem 5rem rgba(99, 102, 241, 0.25);
 }
 
 .subject-header {
@@ -496,15 +524,23 @@ body {
 }
 
 .chart-container {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     padding: clamp(1rem, 2.5vw, 1.5rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
     min-height: 18.75rem;
     max-width: 100%;
     overflow: hidden;
     position: relative;
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 1.875rem 5rem rgba(99, 102, 241, 0.2);
 }
 
 .chart-container canvas {
@@ -521,11 +557,13 @@ body {
 }
 
 .actions-section {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     padding: clamp(1rem, 2.5vw, 1.5rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
@@ -580,11 +618,13 @@ body {
 }
 
 .predictor-section {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     padding: clamp(1rem, 2.5vw, 1.5rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
@@ -1038,11 +1078,13 @@ body {
 
 /* ===== ATTENDANCE CORRECTIONS SECTION ===== */
 .corrections-section {
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     padding: clamp(1rem, 2.5vw, 1.5rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
