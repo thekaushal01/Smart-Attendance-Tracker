@@ -55,39 +55,55 @@ body {
 .container {
     max-width: 75rem;
     margin: 0 auto;
-    padding: clamp(0.625rem, 3vw, 1.25rem);
+    padding: clamp(0.875rem, 3vw, 1.5rem);
     width: 100%;
 }
 
 .header {
     text-align: center;
-    margin-bottom: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.55), rgba(139, 92, 246, 0.55));
     backdrop-filter: blur(1.25rem) saturate(180%);
     -webkit-backdrop-filter: blur(1.25rem) saturate(180%);
     color: white;
-    padding: clamp(1.5rem, 4vw, 2rem);
+    padding: clamp(1.75rem, 4vw, 2.4rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 8px 32px rgba(59, 130, 246, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.22), transparent 40%),
+                radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.18), transparent 35%);
+    pointer-events: none;
 }
 
 .header h1 {
     font-size: clamp(1.5rem, 5vw, 2.5rem);
     margin-bottom: 0.5rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    position: relative;
+    z-index: 1;
 }
 
 .header p {
     font-size: clamp(0.9rem, 2vw, 1.1rem);
-    opacity: 0.9;
+    opacity: 0.95;
+    position: relative;
+    z-index: 1;
 }
 
 .controls {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    margin-bottom: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: clamp(1rem, 2vw, 1.25rem);
     flex-wrap: wrap;
     gap: 1rem;
 }
@@ -96,9 +112,9 @@ body {
     background: var(--glass-bg);
     backdrop-filter: blur(1.25rem);
     -webkit-backdrop-filter: blur(1.25rem);
-    border: 0.125rem solid var(--glass-border);
+    border: 1px solid rgba(148, 163, 184, 0.25);
     border-radius: 3.125rem;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -106,28 +122,65 @@ body {
     gap: 0.5rem;
     font-size: clamp(0.875rem, 2vw, 1rem);
     box-shadow: var(--glass-shadow);
+    color: var(--text-primary);
 }
 
 .theme-toggle:hover {
-    border-color: var(--primary-color);
+    border-color: rgba(59, 130, 246, 0.45);
+    transform: translateY(-2px);
 }
 
 .login-section {
     background: var(--glass-bg);
     backdrop-filter: blur(1.25rem);
     -webkit-backdrop-filter: blur(1.25rem);
-    padding: clamp(1rem, 3vw, 2rem);
+    padding: clamp(1.25rem, 3vw, 2rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
     box-shadow: var(--glass-shadow);
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
     border: 1px solid var(--glass-border);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-section::before {
+    content: '';
+    position: absolute;
+    left: -15%;
+    top: -30%;
+    width: 50%;
+    height: 180%;
+    background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), transparent 70%);
+    pointer-events: none;
+}
+
+.login-head {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.1rem;
+}
+
+.login-head h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.login-head p {
+    color: var(--text-secondary);
+    font-size: clamp(0.85rem, 1.8vw, 0.98rem);
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(clamp(12rem, 30vw, 15rem), 1fr));
-    gap: clamp(0.75rem, 2vw, 1rem);
-    margin-bottom: 1rem;
+    gap: clamp(0.9rem, 2vw, 1.2rem);
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 1;
 }
 
 .form-group {
@@ -137,7 +190,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-primary);
     font-size: clamp(0.875rem, 2vw, 1rem);
 }
@@ -145,17 +198,23 @@ body {
 .form-group input {
     width: 100%;
     padding: clamp(0.625rem, 2vw, 0.75rem) clamp(0.875rem, 2.5vw, 1rem);
-    border: 0.125rem solid var(--border-color);
-    border-radius: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 0.7rem;
     font-size: clamp(0.875rem, 2vw, 1rem);
-    transition: border-color 0.3s ease;
-    background: var(--card-bg);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    background: rgba(15, 23, 42, 0.15);
     color: var(--text-primary);
 }
 
 .form-group input:focus {
     outline: none;
     border-color: var(--primary-color);
+    background: rgba(15, 23, 42, 0.22);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
+}
+
+.form-group input::placeholder {
+    color: color-mix(in srgb, var(--text-secondary) 82%, transparent);
 }
 
 .btn {
@@ -175,10 +234,39 @@ body {
     width: auto;
 }
 
+#fetchBtn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    padding: clamp(0.72rem, 2vw, 0.9rem) clamp(1.2rem, 3vw, 1.6rem);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    box-shadow: 0 0.625rem 1.875rem rgba(37, 99, 235, 0.35);
+    z-index: 1;
+}
+
+#fetchBtn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.3) 50%, transparent 80%);
+    transform: translateX(-120%);
+    transition: transform 0.6s ease;
+    z-index: -1;
+}
+
+#fetchBtn:hover::before {
+    transform: translateX(120%);
+}
+
 .btn:hover {
     background: #2563eb;
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+}
+
+#fetchBtn:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 0.875rem 2.1875rem rgba(29, 78, 216, 0.45);
 }
 
 .btn:disabled {
@@ -418,6 +506,15 @@ body {
 [data-theme="dark"] .badge-danger {
     background: #991b1b;
     color: #fecaca;
+}
+
+[data-theme="dark"] .form-group input {
+    background: rgba(15, 23, 42, 0.45);
+    border-color: rgba(148, 163, 184, 0.28);
+}
+
+[data-theme="dark"] .form-group input:focus {
+    background: rgba(15, 23, 42, 0.58);
 }
 
 .subject-stats {
@@ -704,6 +801,18 @@ body {
         padding: 1.25rem;
         border-radius: 0.625rem;
     }
+
+    .login-head {
+        margin-bottom: 0.9rem;
+    }
+
+    .login-head h2 {
+        font-size: 1rem;
+    }
+
+    .login-head p {
+        font-size: 0.82rem;
+    }
     
     .header h1 {
         font-size: clamp(1.1rem, 5vw, 1.4rem);
@@ -836,7 +945,7 @@ body {
     }
     
     .controls {
-        justify-content: flex-end;
+        justify-content: flex-start;
     }
 }
 

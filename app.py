@@ -12,7 +12,7 @@ from collections import defaultdict
 
 app = Flask(__name__, static_folder='assets', static_url_path='/assets')
 
-# --- Scraper Function (Modified for Web Use) ---
+# Scraper Function (Modified for Web Use)
 def scrape_attendance(username, password):
     try:
         chrome_options = Options()
