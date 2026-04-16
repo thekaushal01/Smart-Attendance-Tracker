@@ -13,7 +13,7 @@ html {
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
-    --bg-color: #f8fafc;
+    --bg-color: #f7f3eb;
     --card-bg: #ffffff;
     --text-primary: #1e293b;
     --text-secondary: #64748b;
@@ -40,6 +40,11 @@ html {
 body[data-theme="dark"],
 [data-theme="dark"] body {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+/* Light mode gets a warm eye-comfort gradient */
+body:not([data-theme="dark"]) {
+    background: linear-gradient(145deg, #fdf9f1 0%, #f7f3eb 52%, #efe6d8 100%);
 }
 
 body {
