@@ -1174,7 +1174,7 @@ function applyCorrection() {
     displayCorrections();
     calculateAdjustedStats();
     
-    showNotification(`<i class="fi fi-rr-check-circle"></i> Corrected ${count} class(es) for ${subject.subject}`, 'success');
+    showNotification(`Corrected ${count} classes for ${subject.subject}`, 'success');
     
     // Reset inputs
     document.getElementById('correctionSubject').value = '';
