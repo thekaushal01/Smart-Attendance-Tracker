@@ -339,16 +339,6 @@ body {
     box-shadow: 0 1.875rem 5rem rgba(11, 107, 99, 0.16);
 }
 
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-accent));
-}
-
 .stat-value {
     font-size: clamp(1.5rem, 4vw, 2rem);
     font-weight: 700;
@@ -777,16 +767,20 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
+    border: 1px solid var(--glass-border);
     border-radius: 8px;
     margin-bottom: 0.5rem;
+    box-shadow: var(--glass-shadow);
     transition: all 0.3s ease;
     gap: 0.5rem;
 }
 
 .list-item:hover {
-    background: var(--bg-color);
+    border-color: rgba(11, 107, 99, 0.45);
+    box-shadow: 0 1.25rem 3rem rgba(11, 107, 99, 0.12);
 }
 
 .mobile-card {
@@ -1233,9 +1227,12 @@ body {
 }
 
 .corrections-summary {
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
+    box-shadow: var(--glass-shadow);
     padding: 1rem;
     margin-bottom: 1rem;
     display: none;
@@ -1250,10 +1247,13 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem;
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
     border-radius: 0.5rem;
     margin-bottom: 0.5rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
 }
 
 .correction-item:last-child {
@@ -1300,10 +1300,13 @@ body {
 }
 
 .comparison-card {
-    background: var(--bg-color);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1.25rem);
+    -webkit-backdrop-filter: blur(1.25rem);
     border-radius: 0.75rem;
     padding: 1.25rem;
-    border: 2px solid var(--border-color);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
     transition: all 0.3s ease;
 }
 
@@ -1369,7 +1372,11 @@ body {
     gap: 0.75rem;
     margin-bottom: 0.75rem;
     padding: 0.75rem;
-    background: var(--card-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(1rem);
+    -webkit-backdrop-filter: blur(1rem);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
     border-radius: 0.5rem;
 }
 
