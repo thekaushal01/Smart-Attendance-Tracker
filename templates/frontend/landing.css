@@ -5,10 +5,10 @@
 }
 
 :root {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --secondary: #8b5cf6;
-    --accent: #6366f1;
+    --primary: #1d4ed8;
+    --primary-dark: #1e40af;
+    --secondary: #0b6b63;
+    --accent: #0f766e;
     --success: #10b981;
     --warning: #f59e0b;
     --dark: #0f172a;
@@ -50,9 +50,9 @@ body {
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(11, 107, 99, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(176, 137, 104, 0.1) 0%, transparent 50%);
 }
 
 /* Navigation — fixed top navbar that turns into a floating glass pill once you start scrolling */
@@ -104,7 +104,7 @@ nav.scrolled .nav-container {
     background: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(11, 107, 99, 0.22);
     border-radius: 1rem;
     padding: 0.5rem 1.5rem;
     max-width: 960px;
@@ -116,7 +116,7 @@ nav.scrolled .nav-container {
     gap: 0.75rem;
     font-size: clamp(1rem, 4vw, 1.6rem);
     font-weight: 800;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    background: linear-gradient(135deg, #1d4ed8, #0b6b63);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -142,7 +142,7 @@ nav.scrolled .nav-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.2));
+    background: linear-gradient(135deg, rgba(29, 78, 216, 0.28), rgba(11, 107, 99, 0.22));
     backdrop-filter: blur(5px);
     padding: 0.375rem;
     position: relative;
@@ -349,7 +349,7 @@ h1 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.2));
+    background: linear-gradient(135deg, rgba(29, 78, 216, 0.28), rgba(11, 107, 99, 0.22));
     backdrop-filter: blur(5px);
     color: var(--white);
     border: 2px solid rgba(59, 130, 246, 0.5);
@@ -496,8 +496,8 @@ h1 {
 }
 
 .mockup-stat {
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    background: rgba(29, 78, 216, 0.1);
+    border: 1px solid rgba(11, 107, 99, 0.3);
     padding: clamp(0.75rem, 2vw, 1.5rem);
     border-radius: 0.75rem;
     animation: pulse-slow 3s ease-in-out infinite;
@@ -529,7 +529,7 @@ h1 {
 
 .mockup-chart {
     height: clamp(10rem, 25vw, 12.5rem);
-    background: rgba(99, 102, 241, 0.05);
+    background: rgba(29, 78, 216, 0.06);
     border-radius: 0.75rem;
     position: relative;
     overflow: visible;
@@ -752,8 +752,8 @@ h1 {
 }
 
 .feature-card:hover {
-    border-color: rgba(99, 102, 241, 0.5);
-    box-shadow: 0 30px 80px rgba(99, 102, 241, 0.3);
+    border-color: rgba(11, 107, 99, 0.5);
+    box-shadow: 0 30px 80px rgba(11, 107, 99, 0.24);
     transform: translateY(-10px) scale(1.02);
 }
 
@@ -873,7 +873,7 @@ h1 {
     justify-content: center;
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 900;
-    box-shadow: 0 0.625rem 2.5rem rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0.625rem 2.5rem rgba(11, 107, 99, 0.3);
 }
 
 .step h3 {
@@ -898,8 +898,8 @@ h1 {
 .cta-content {
     max-width: 56.25rem;
     margin: 0 auto;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    background: linear-gradient(135deg, rgba(29, 78, 216, 0.2), rgba(11, 107, 99, 0.2));
+    border: 1px solid rgba(11, 107, 99, 0.3);
     border-radius: clamp(1.25rem, 4vw, 1.875rem);
     padding: clamp(2rem, 6vw, 4rem);
     backdrop-filter: blur(1.25rem);
@@ -914,7 +914,7 @@ h1 {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(11, 107, 99, 0.28) 0%, transparent 70%);
     animation: rotate 20s linear infinite;
 }
 
@@ -1140,7 +1140,7 @@ footer {
         gap: 1.5rem;
         transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 1000;
-        border-left: 1px solid rgba(99, 102, 241, 0.2);
+        border-left: 1px solid rgba(11, 107, 99, 0.25);
         box-shadow: -0.625rem 0 2.5rem rgba(0, 0, 0, 0.5);
         align-items: flex-start;
     }
@@ -1161,7 +1161,7 @@ footer {
     }
     
     .nav-links a:hover {
-        background: rgba(99, 102, 241, 0.1);
+        background: rgba(11, 107, 99, 0.12);
         transform: translateX(0.5rem);
     }
     
