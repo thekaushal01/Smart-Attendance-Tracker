@@ -67,12 +67,12 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+    margin-bottom: clamp(1rem, 2vw, 1.25rem);
     background: linear-gradient(135deg, rgba(29, 78, 216, 0.62), rgba(11, 107, 99, 0.62));
     backdrop-filter: blur(1.25rem) saturate(180%);
     -webkit-backdrop-filter: blur(1.25rem) saturate(180%);
     color: white;
-    padding: clamp(1.75rem, 4vw, 2.4rem);
+    padding: clamp(1rem, 2.2vw, 1.4rem) clamp(1rem, 2.5vw, 1.5rem) clamp(0.95rem, 2vw, 1.2rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 0.75rem 2.25rem rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -90,28 +90,22 @@ body {
 }
 
 .header h1 {
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    margin-bottom: 0.5rem;
+    font-size: clamp(1.55rem, 3.3vw, 2.3rem);
+    margin-bottom: 0.2rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    position: relative;
-    z-index: 1;
 }
 
 .header p {
-    font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+    font-size: clamp(0.85rem, 1.5vw, 0.98rem);
     opacity: 0.95;
-    position: relative;
-    z-index: 1;
 }
 
 .controls {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: clamp(1rem, 2vw, 1.25rem);
-    flex-wrap: wrap;
-    gap: 1rem;
+    position: absolute;
+    top: clamp(0.8rem, 1.8vw, 1.05rem);
+    right: clamp(0.8rem, 1.8vw, 1.05rem);
+    z-index: 2;
 }
 
 .theme-toggle {
@@ -120,15 +114,16 @@ body {
     -webkit-backdrop-filter: blur(1.25rem);
     border: 1px solid rgba(148, 163, 184, 0.25);
     border-radius: 3.125rem;
-    padding: 0.6rem 1.1rem;
+    padding: 0.5rem 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: clamp(0.875rem, 2vw, 1rem);
+    font-size: clamp(0.78rem, 1.4vw, 0.92rem);
     box-shadow: var(--glass-shadow);
     color: var(--text-primary);
+    white-space: nowrap;
 }
 
 .theme-toggle:hover {
@@ -136,11 +131,26 @@ body {
     transform: translateY(-2px);
 }
 
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: clamp(1.15rem, 5vw, 1.4rem);
+    }
+
+    .header p {
+        font-size: 0.8rem;
+    }
+
+    .theme-toggle {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.75rem;
+    }
+}
+
 .login-section {
     background: var(--glass-bg);
     backdrop-filter: blur(1.25rem);
     -webkit-backdrop-filter: blur(1.25rem);
-    padding: clamp(1.25rem, 3vw, 2rem);
+    padding: clamp(1rem, 2.5vw, 1.5rem);
     border-radius: clamp(0.75rem, 2vw, 1rem);
     box-shadow: var(--glass-shadow);
     margin-bottom: clamp(1.5rem, 3vw, 2rem);
@@ -163,15 +173,15 @@ body {
 .login-head {
     position: relative;
     z-index: 1;
-    margin-bottom: 1.1rem;
+    margin-bottom: 0.9rem;
 }
 
 .login-head h2 {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: clamp(1.1rem, 2.1vw, 1.4rem);
-    margin-bottom: 0.25rem;
+    font-size: clamp(1rem, 1.9vw, 1.25rem);
+    margin-bottom: 0.2rem;
     color: var(--text-primary);
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -179,20 +189,26 @@ body {
 
 .login-head p {
     color: var(--text-secondary);
-    font-size: clamp(0.875rem, 1.7vw, 1rem);
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem);
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(12rem, 30vw, 15rem), 1fr));
-    gap: clamp(0.9rem, 2vw, 1.2rem);
-    margin-bottom: 1.2rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(13rem, 16rem);
+    gap: clamp(0.75rem, 1.5vw, 1rem);
+    margin-bottom: 0;
     position: relative;
     z-index: 1;
+    align-items: end;
 }
 
 .form-group {
     margin-bottom: 0;
+}
+
+.form-action-group {
+    display: flex;
+    align-items: flex-end;
 }
 
 .form-group label {
@@ -251,6 +267,8 @@ body {
     background: linear-gradient(135deg, #1d4ed8, #0b6b63);
     box-shadow: 0 0.625rem 1.875rem rgba(15, 23, 42, 0.25);
     z-index: 1;
+    width: 100%;
+    min-height: 3.25rem;
 }
 
 #fetchBtn::before {
@@ -849,10 +867,7 @@ body {
     }
     
     .progress-ring {
-        width: 2.75rem;
-        height: 2.75rem;
-        top: 0.5rem;
-        right: 0.5rem;
+        display: none;
     }
     
     .subjects-grid {
@@ -861,13 +876,20 @@ body {
     }
     
     .subject-header {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
-        gap: 0.5rem;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .subject-name {
+        min-width: 0;
+        flex: 1 1 auto;
     }
     
     .attendance-badge {
-        margin-left: 0;
+        margin-left: auto;
+        flex-shrink: 0;
     }
     
     .charts-section {
@@ -919,6 +941,14 @@ body {
     
     .form-grid {
         grid-template-columns: 1fr;
+    }
+
+    .form-action-group {
+        display: block;
+    }
+
+    #fetchBtn {
+        width: 100%;
     }
     
     .section-header {
@@ -986,6 +1016,10 @@ body {
     
     .form-grid {
         grid-template-columns: 1fr;
+    }
+
+    .progress-ring {
+        display: none;
     }
     
     .correction-controls .form-group {

@@ -16,15 +16,14 @@
     <div class="particle-container" id="particleContainer"></div>
     <div class="container">
         <div class="header">
+            <div class="controls">
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon"><i class="fi fi-rr-moon"></i></span>
+                    <span id="theme-text">Dark Mode</span>
+                </div>
+            </div>
             <h1><i class="fi fi-rr-book-alt"></i> College Attendance Tracker</h1>
             <p>Smart attendance tracking with predictive insights</p>
-        </div>
-
-        <div class="controls">
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <span id="theme-icon"><i class="fi fi-rr-moon"></i></span>
-                <span id="theme-text">Dark Mode</span>
-            </div>
         </div>
 
         <div class="login-section">
@@ -42,11 +41,13 @@
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" required placeholder="Enter your password">
                     </div>
+                    <div class="form-group form-action-group">
+                        <button type="submit" class="btn" id="fetchBtn">
+                            <span id="btnText"><i class="fi fi-rr-search"></i> Fetch Attendance</span>
+                            <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn" id="fetchBtn">
-                    <span id="btnText"><i class="fi fi-rr-search"></i> Fetch Attendance</span>
-                    <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
-                </button>
             </form>
         </div>
 
